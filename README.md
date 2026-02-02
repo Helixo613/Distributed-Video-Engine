@@ -1,27 +1,18 @@
-# Distributed Video Rendering Engine (HPC Hackathon)
+# Distributed Video Rendering Engine
 
-A high-performance, distributed video processing engine written in Python. It uses a **Split-Process-Merge** architecture to parallelize FFmpeg filters across CPU cores, demonstrating **Amdahl's Law** and algorithmic scalability on commodity hardware.
+A CPU-parallel video processing pipeline built for the HPC Hackathon. This tool demonstrates how to scale heavy video filtering across multiple cores using a split-process-merge pattern.
 
-## 📂 Project Structure
+## Overview
+The engine breaks a video into virtual chunks, processes them in parallel using FFmpeg subprocesses, and merges them back into a single file. It's designed to benchmark CPU scaling and verify Amdahl's Law without requiring a GPU.
 
-```
-/
-├── src/
-│   ├── render_engine.py       # Core Logic + Scheduler + CLI
-│   └── generate_test_video.py # Synthetic Asset Generator
-├── docs/
-│   ├── GEMINI.md              # Final Architecture & Features
-│   ├── ARCHITECTURE.md        # Original Architecture Design
-│   └── IMPLEMENTATION.md      # Step-by-Step Implementation Guide
-├── benchmarks/                # JSON Performance Data
-├── requirements.txt           # Dependencies
-└── README.md                  # This file
-```
+## Setup
 
-## 🚀 Quick Start
+### Requirements
+- Python 3.10+
+- **FFmpeg** (installed and added to your system PATH)
 
-### 1. Setup Environment
-**WSL / Linux:**
+### Installation
+**Linux / WSL:**
 ```bash
 python3 -m venv venv
 source venv/bin/activate
@@ -34,31 +25,35 @@ python -m venv venv
 .\venv\Scripts\Activate
 pip install -r requirements.txt
 ```
-*Note: For Windows users, please follow the [FFmpeg Installation Guide](docs/WINDOWS_SETUP.md) before starting.*
+*Note: For Windows users, see [docs/WINDOWS_SETUP.md](docs/WINDOWS_SETUP.md) for FFmpeg setup instructions.*
 
-### 2. Run the Engine
-Run a full scaling sweep (1, 2, 4, 8... workers) with the live HPC dashboard:
+## Usage
+
+### Running a Benchmark
+To run a full scaling sweep (testing 1, 2, 4, 8... workers) and see the live performance dashboard:
 ```bash
 python src/render_engine.py --sweep
 ```
 
-## 💻 Cross-Platform Compatibility
-This project is developed on WSL (Ubuntu) but is designed to be fully compatible with native Windows environments. For detailed setup instructions regarding Windows paths, FFmpeg binaries, and environment activation, see:
-👉 **[docs/WINDOWS_SETUP.md](docs/WINDOWS_SETUP.md)**
-
-### 3. Demo Mode (High Load)
-To prove the speedup on high-end hardware (simulating 3D rendering), run with the heavy filter:
+### Processing a Specific File
 ```bash
 python src/render_engine.py input.mp4 -w 8 --filter "hqdn3d=10:10:10:10"
 ```
 
-## 📊 Key Features
-*   **Live CLI Dashboard:** Visualizes per-core CPU usage and job progress.
-*   **Auto-Asset Gen:** Automatically creates a test video if none is provided.
-*   **Data Export:** Saves benchmark results to JSON for analysis.
+### Exporting Data
+```bash
+python src/render_engine.py input.mp4 --export results.json
+```
 
-## 📝 UI Integration
-This backend is designed to be decoupled. The UI team should interface with it by:
-1.  Calling `render_engine.py` via `subprocess`.
-2.  Parsing the real-time stdout for progress updates.
-3.  Reading the `--export result.json` file for final metrics.
+## Project Structure
+- `src/`: Core engine and synthetic video generator.
+- `docs/`: Technical specs and setup guides.
+- `benchmarks/`: JSON output from performance runs.
+- `references/`: Research papers related to video rendering.
+- `data/`: Input/Output video files (ignored by git).
+
+## How it works
+1. **Probe:** Gets video metadata using `ffprobe`.
+2. **Virtual Split:** Calculates time-based offsets (no physical file cutting).
+3. **Parallel Processing:** Executes multiple FFmpeg instances via `ProcessPoolExecutor`.
+4. **Stream Merge:** Uses the FFmpeg concat demuxer to join chunks with no re-encoding overhead.
