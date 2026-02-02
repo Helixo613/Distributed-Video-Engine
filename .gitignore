@@ -4,6 +4,10 @@ __pycache__/
 *.py[cod]
 .DS_Store
 
+# Project folders to ignore
+frontend/
+data/
+
 # Media Assets (Large files)
 *.mp4
 *.mov
