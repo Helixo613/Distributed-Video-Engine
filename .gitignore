@@ -1,0 +1,37 @@
+# Environments
+venv/
+__pycache__/
+*.py[cod]
+.DS_Store
+
+# Project folders to ignore
+data/
+
+# Media Assets (Large files)
+*.mp4
+*.mov
+*.avi
+*.mkv
+
+# Temporary Workspaces
+.temp_chunks/
+.temp_*/
+.server_temp/
+outputs/
+uploads/
+
+# Logs and Reports
+*.log
+results.json
+
+# Frontend build artifacts
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# IDE
+.vscode/
+.idea/
+
+# Temporary debug folders
+Errors in Ui/
