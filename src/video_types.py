@@ -94,3 +94,31 @@ class SchedulerDecision:
     overheads: dict[str, float]
     rationale: list[str]
     search_trace: list[dict[str, Any]] = field(default_factory=list)
+
+
+@dataclass
+class CandidatePlan:
+    """A single evaluated execution candidate — serial or parallel with a specific configuration."""
+
+    label: str  # "serial", "static-equal", "adaptive-searched"
+    regime: str  # "serial" or "parallel"
+    worker_count: int
+    chunk_count: int
+    partition_policy: str
+    predicted_compute_time: float
+    predicted_e2e_time: float  # compute + overheads
+    estimated_serial_time: float
+    estimated_chunk_costs: list[float]
+    overheads: dict[str, float]
+    rationale: list[str]
+
+
+@dataclass
+class SelectionResult:
+    """Output of the execution selector: the chosen plan plus all evaluated candidates."""
+
+    selected: CandidatePlan
+    candidates: list[CandidatePlan]
+    selection_rationale: list[str]
+    search_trace: list[dict[str, Any]]
+    estimated_serial_time: float

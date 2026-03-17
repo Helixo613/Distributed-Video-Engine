@@ -206,7 +206,7 @@ def build_comparison_report(
     size_change_pct = float(quality_metrics.get("size_change_pct") or 0.0)
     report = {
         "sample_seconds": round(sample_seconds, 2),
-        "input_size_mb": quality_metrics.get("input_size_mb"),
+        "input_size_mb": quality_metrics.get("reference_size_mb"),
         "output_size_mb": quality_metrics.get("output_size_mb"),
         "size_change_pct": round(size_change_pct, 2),
         "psnr_avg": psnr_avg,
@@ -425,9 +425,9 @@ def run_render_task(
             job["serial_progress"] = 100
 
         _set_job_progress(job, "planning")
-        scheduler_decision = None
+        selection_result = None
         if scheduler_enabled:
-            scheduler_decision = search_best_configuration(
+            selection_result = search_best_configuration(
                 input_path=input_path,
                 metadata=metadata,
                 feature_result=feature_result,
@@ -442,10 +442,10 @@ def run_render_task(
                     "feature": feature_result.extraction_time,
                 },
             )
-            workers = scheduler_decision.worker_count
-            selected_chunk_count = scheduler_decision.chunk_count
+            workers = selection_result.selected.worker_count
+            selected_chunk_count = selection_result.selected.chunk_count
             job["workers"] = workers
-            job["scheduler"] = asdict(scheduler_decision)
+            job["selection"] = asdict(selection_result)
         else:
             selected_chunk_count = requested_chunk_count or max(1, workers)
 
@@ -457,16 +457,16 @@ def run_render_task(
             num_chunks=1 if partition_policy == "serial" else selected_chunk_count,
             feature_result=feature_result,
             estimated_total_runtime=(
-                scheduler_decision.estimated_serial_time
-                if scheduler_decision is not None
+                selection_result.estimated_serial_time
+                if selection_result is not None
                 else (projected_serial_time or metadata.duration)
             ),
         )
         job["chunk_count"] = len(partition_plan.chunks)
         job["planning_rationale"] = list(partition_plan.rationale)
         job["predicted_chunk_costs"] = (
-            list(scheduler_decision.estimated_chunk_costs)
-            if scheduler_decision is not None
+            list(selection_result.selected.estimated_chunk_costs)
+            if selection_result is not None
             else [float(chunk.estimated_cost or 0.0) for chunk in partition_plan.chunks]
         )
         job["planned_chunk_boundaries"] = [
@@ -526,10 +526,10 @@ def run_render_task(
             "efficiency": efficiency,
             "chunk_imbalance_ratio": execution["straggler_ratio"],
             "straggler_ratio": execution["straggler_ratio"],
-            "predicted_total_time": scheduler_decision.predicted_total_time if scheduler_decision else None,
+            "predicted_total_time": selection_result.selected.predicted_e2e_time if selection_result else None,
             "prediction_error": (
-                abs(scheduler_decision.predicted_total_time - total_runtime)
-                if scheduler_decision is not None
+                abs(selection_result.selected.predicted_e2e_time - total_runtime)
+                if selection_result is not None
                 else None
             ),
         }
@@ -570,7 +570,7 @@ def run_render_task(
             },
             "performance": performance,
             "quality": quality_metrics,
-            "scheduler": asdict(scheduler_decision) if scheduler_decision is not None else None,
+            "selection": asdict(selection_result) if selection_result is not None else None,
             "segment_records": segment_records,
             "api_job_id": job_id,
         }
@@ -725,7 +725,7 @@ async def create_job(job_req: JobCreate, background_tasks: BackgroundTasks):
         "actual_chunk_runtime": None,
         "overheads": None,
         "performance": None,
-        "scheduler": None,
+        "selection": None,
         "feature_summary": None,
         "quality_metrics": None,
         "experiment_record_path": None,

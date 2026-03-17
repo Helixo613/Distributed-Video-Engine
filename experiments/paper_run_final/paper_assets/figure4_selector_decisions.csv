@@ -1,0 +1,14 @@
+case,workload,content_class,selector_regime,selector_label,selected_workers,selected_chunks,good_decision,winner_baseline
+real_clipchamp_1080p_30s::heavy,heavy,static-low-motion,parallel,"adaptive-searched,static-equal",8,8,True,adaptive-scheduled
+real_clipchamp_1080p_30s::light,light,static-low-motion,parallel,static-equal,8,8,True,adaptive-scheduled
+real_clipchamp_1080p_30s::medium,medium,static-low-motion,parallel,adaptive-searched,8,8,True,adaptive-scheduled
+real_clipchamp_720p_12s::heavy,heavy,static-low-motion,parallel,"adaptive-searched,static-equal",4,4,True,static-equal
+real_clipchamp_720p_12s::light,light,static-low-motion,parallel,static-equal,4,4,True,static-equal
+real_clipchamp_720p_12s::medium,medium,static-low-motion,parallel,static-equal,4,4,True,adaptive-scheduled
+real_clipchamp_720p_3s::light,light,static-low-motion,serial,serial,1,1,False,static-equal
+real_phone_1080p_12s::heavy,heavy,scene-cut-heavy,parallel,static-equal,4,4,True,adaptive-scheduled
+real_phone_1080p_12s::light,light,scene-cut-heavy,parallel,static-equal,4,4,True,adaptive-scheduled
+real_phone_1080p_12s::medium,medium,scene-cut-heavy,parallel,static-equal,4,4,True,adaptive-scheduled
+real_test_input_720p_30s::heavy,heavy,medium-to-high-motion,parallel,"adaptive-searched,static-equal",8,8,True,adaptive-scheduled
+real_test_input_720p_30s::light,light,medium-to-high-motion,parallel,static-equal,8,8,True,adaptive-scheduled
+real_test_input_720p_30s::medium,medium,medium-to-high-motion,parallel,static-equal,8,8,True,adaptive-scheduled

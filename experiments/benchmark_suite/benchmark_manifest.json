@@ -1,0 +1,665 @@
+{
+  "schema_version": "research-prototype.v3",
+  "clips": [
+    {
+      "clip_id": "real_test_input_720p_12s",
+      "path": "/home/arnavbansal/HPC_clean_clone/experiments/benchmark_suite/inputs/real_test_input_720p_12s.mp4",
+      "source_kind": "real",
+      "source_path": "/home/arnavbansal/HPC_clean_clone/test_input.mp4",
+      "duration_label": "12s",
+      "resolution_label": "720p",
+      "content_class": "medium-to-high-motion",
+      "metadata": {
+        "duration": 12.0,
+        "width": 1280,
+        "height": 720,
+        "fps": 30.0,
+        "bitrate": 17931565.0
+      },
+      "feature_summary": {
+        "duration": 12.0,
+        "width": 1280,
+        "height": 720,
+        "fps": 30.0,
+        "bitrate": 17931565.0,
+        "bpp": 0.6485664424189815,
+        "scene_change_proxy": 0.16666666666666666,
+        "motion_proxy": 10.068463861942291,
+        "luma_variance": 1884.4676167036966,
+        "texture_proxy": 7.805325984954834,
+        "encode_time_proxy": null,
+        "analysis_scene_threshold": 13.610955790509838
+      }
+    },
+    {
+      "clip_id": "real_test_input_720p_30s",
+      "path": "/home/arnavbansal/HPC_clean_clone/experiments/benchmark_suite/inputs/real_test_input_720p_30s.mp4",
+      "source_kind": "real",
+      "source_path": "/home/arnavbansal/HPC_clean_clone/test_input.mp4",
+      "duration_label": "30s",
+      "resolution_label": "720p",
+      "content_class": "medium-to-high-motion",
+      "metadata": {
+        "duration": 30.0,
+        "width": 1280,
+        "height": 720,
+        "fps": 30.0,
+        "bitrate": 21958137.0
+      },
+      "feature_summary": {
+        "duration": 30.0,
+        "width": 1280,
+        "height": 720,
+        "fps": 30.0,
+        "bitrate": 21958137.0,
+        "bpp": 0.7942034505208333,
+        "scene_change_proxy": 0.16666666666666666,
+        "motion_proxy": 12.86498203277588,
+        "luma_variance": 1853.5988184328044,
+        "texture_proxy": 9.537442207336426,
+        "encode_time_proxy": null,
+        "analysis_scene_threshold": 16.77192226786886
+      }
+    },
+    {
+      "clip_id": "real_phone_1080p_12s",
+      "path": "/home/arnavbansal/HPC_clean_clone/experiments/benchmark_suite/inputs/real_phone_1080p_12s.mp4",
+      "source_kind": "real",
+      "source_path": "/home/arnavbansal/HPC_clean_clone/0f282b8c_43295-436026111.mp4",
+      "duration_label": "12s",
+      "resolution_label": "1080p",
+      "content_class": "scene-cut-heavy",
+      "metadata": {
+        "duration": 12.0,
+        "width": 1920,
+        "height": 1080,
+        "fps": 25.0,
+        "bitrate": 10249327.0
+      },
+      "feature_summary": {
+        "duration": 12.0,
+        "width": 1920,
+        "height": 1080,
+        "fps": 25.0,
+        "bitrate": 10249327.0,
+        "bpp": 0.19771078317901233,
+        "scene_change_proxy": 0.3333333333333333,
+        "motion_proxy": 2.137570741275946,
+        "luma_variance": 6018.895303628615,
+        "texture_proxy": 19.407224655151367,
+        "encode_time_proxy": null,
+        "analysis_scene_threshold": 3.3987831134857363
+      }
+    },
+    {
+      "clip_id": "real_clipchamp_720p_3s",
+      "path": "/home/arnavbansal/HPC_clean_clone/experiments/benchmark_suite/inputs/real_clipchamp_720p_3s.mp4",
+      "source_kind": "real",
+      "source_path": "/home/arnavbansal/HPC_clean_clone/4a2a3887_Untitled video - Made with Clipchamp (4) (1) (1).mp4",
+      "duration_label": "3s",
+      "resolution_label": "720p",
+      "content_class": "static-low-motion",
+      "metadata": {
+        "duration": 3.008,
+        "width": 1280,
+        "height": 720,
+        "fps": 30.0,
+        "bitrate": 5970635.0
+      },
+      "feature_summary": {
+        "duration": 3.008,
+        "width": 1280,
+        "height": 720,
+        "fps": 30.0,
+        "bitrate": 5970635.0,
+        "bpp": 0.2159468,
+        "scene_change_proxy": 0.0,
+        "motion_proxy": 2.17,
+        "luma_variance": 275.0,
+        "texture_proxy": 4.65,
+        "encode_time_proxy": null,
+        "analysis_scene_threshold": 4.57
+      }
+    },
+    {
+      "clip_id": "real_clipchamp_720p_12s",
+      "path": "/home/arnavbansal/HPC_clean_clone/experiments/benchmark_suite/inputs/real_clipchamp_720p_12s.mp4",
+      "source_kind": "real",
+      "source_path": "/home/arnavbansal/HPC_clean_clone/4a2a3887_Untitled video - Made with Clipchamp (4) (1) (1).mp4",
+      "duration_label": "12s",
+      "resolution_label": "720p",
+      "content_class": "static-low-motion",
+      "metadata": {
+        "duration": 12.0,
+        "width": 1280,
+        "height": 720,
+        "fps": 30.0,
+        "bitrate": 6450424.0
+      },
+      "feature_summary": {
+        "duration": 12.0,
+        "width": 1280,
+        "height": 720,
+        "fps": 30.0,
+        "bitrate": 6450424.0,
+        "bpp": 0.2333052662037037,
+        "scene_change_proxy": 0.16666666666666666,
+        "motion_proxy": 2.8371913532416024,
+        "luma_variance": 521.8169019191614,
+        "texture_proxy": 7.029988765716553,
+        "encode_time_proxy": null,
+        "analysis_scene_threshold": 4.571379222688436
+      }
+    },
+    {
+      "clip_id": "real_clipchamp_1080p_30s",
+      "path": "/home/arnavbansal/HPC_clean_clone/experiments/benchmark_suite/inputs/real_clipchamp_1080p_30s.mp4",
+      "source_kind": "real",
+      "source_path": "/home/arnavbansal/HPC_clean_clone/4a2a3887_Untitled video - Made with Clipchamp (4) (1) (1).mp4",
+      "duration_label": "30s",
+      "resolution_label": "1080p",
+      "content_class": "static-low-motion",
+      "metadata": {
+        "duration": 30.0,
+        "width": 1920,
+        "height": 1080,
+        "fps": 30.0,
+        "bitrate": 6247624.0
+      },
+      "feature_summary": {
+        "duration": 30.0,
+        "width": 1920,
+        "height": 1080,
+        "fps": 30.0,
+        "bitrate": 6247624.0,
+        "bpp": 0.10043119855967078,
+        "scene_change_proxy": 0.08333333333333333,
+        "motion_proxy": 1.383249748001496,
+        "luma_variance": 818.9360978851219,
+        "texture_proxy": 7.769041538238525,
+        "encode_time_proxy": null,
+        "analysis_scene_threshold": 2.73292873582687
+      }
+    },
+    {
+      "clip_id": "real_clipchamp_1080p_60s",
+      "path": "/home/arnavbansal/HPC_clean_clone/experiments/benchmark_suite/inputs/real_clipchamp_1080p_60s.mp4",
+      "source_kind": "real",
+      "source_path": "/home/arnavbansal/HPC_clean_clone/4a2a3887_Untitled video - Made with Clipchamp (4) (1) (1).mp4",
+      "duration_label": "60s",
+      "resolution_label": "1080p",
+      "content_class": "medium-motion",
+      "metadata": {
+        "duration": 60.0,
+        "width": 1920,
+        "height": 1080,
+        "fps": 30.0,
+        "bitrate": 7956300.0
+      },
+      "feature_summary": {
+        "duration": 60.0,
+        "width": 1920,
+        "height": 1080,
+        "fps": 30.0,
+        "bitrate": 7956300.0,
+        "bpp": 0.12789834104938272,
+        "scene_change_proxy": 0.06666666666666667,
+        "motion_proxy": 5.000073887167188,
+        "luma_variance": 1957.883817197651,
+        "texture_proxy": 8.695159912109375,
+        "encode_time_proxy": null,
+        "analysis_scene_threshold": 20.711953826867855
+      }
+    },
+    {
+      "clip_id": "real_4k_primary_12s",
+      "path": "/home/arnavbansal/HPC_clean_clone/experiments/benchmark_suite/inputs/real_4k_primary_12s.mp4",
+      "source_kind": "real",
+      "source_path": "/home/arnavbansal/HPC_clean_clone/2e4d0e39_203678-922748476.mp4",
+      "duration_label": "12s",
+      "resolution_label": "2160p",
+      "content_class": "scene-cut-heavy",
+      "metadata": {
+        "duration": 12.012,
+        "width": 3840,
+        "height": 2160,
+        "fps": 29.97002997002997,
+        "bitrate": 82338787.0
+      },
+      "feature_summary": {
+        "duration": 12.012,
+        "width": 3840,
+        "height": 2160,
+        "fps": 29.97002997002997,
+        "bitrate": 82338787.0,
+        "bpp": 0.33123201914142875,
+        "scene_change_proxy": 0.25,
+        "motion_proxy": 7.728869169950485,
+        "luma_variance": 8115.336349061705,
+        "texture_proxy": 8.035785675048828,
+        "encode_time_proxy": null,
+        "analysis_scene_threshold": 11.416359791333317
+      }
+    },
+    {
+      "clip_id": "real_4k_primary_30s",
+      "path": "/home/arnavbansal/HPC_clean_clone/experiments/benchmark_suite/inputs/real_4k_primary_30s.mp4",
+      "source_kind": "real",
+      "source_path": "/home/arnavbansal/HPC_clean_clone/2e4d0e39_203678-922748476.mp4",
+      "duration_label": "30s",
+      "resolution_label": "2160p",
+      "content_class": "scene-cut-heavy",
+      "metadata": {
+        "duration": 30.03,
+        "width": 3840,
+        "height": 2160,
+        "fps": 29.97002997002997,
+        "bitrate": 78051433.0
+      },
+      "feature_summary": {
+        "duration": 30.03,
+        "width": 3840,
+        "height": 2160,
+        "fps": 29.97002997002997,
+        "bitrate": 78051433.0,
+        "bpp": 0.3139848750683192,
+        "scene_change_proxy": 0.25,
+        "motion_proxy": 5.969110065698624,
+        "luma_variance": 8394.908274913481,
+        "texture_proxy": 7.150548934936523,
+        "encode_time_proxy": null,
+        "analysis_scene_threshold": 10.462740625336842
+      }
+    },
+    {
+      "clip_id": "real_4k_downscaled_30s",
+      "path": "/home/arnavbansal/HPC_clean_clone/experiments/benchmark_suite/inputs/real_4k_downscaled_30s.mp4",
+      "source_kind": "real",
+      "source_path": "/home/arnavbansal/HPC_clean_clone/2e4d0e39_203678-922748476.mp4",
+      "duration_label": "30s",
+      "resolution_label": "1080p",
+      "content_class": "scene-cut-heavy",
+      "metadata": {
+        "duration": 30.03,
+        "width": 1920,
+        "height": 1080,
+        "fps": 29.97002997002997,
+        "bitrate": 28247701.0
+      },
+      "feature_summary": {
+        "duration": 30.03,
+        "width": 1920,
+        "height": 1080,
+        "fps": 29.97002997002997,
+        "bitrate": 28247701.0,
+        "bpp": 0.4545387844167953,
+        "scene_change_proxy": 0.25,
+        "motion_proxy": 5.597090397278468,
+        "luma_variance": 8380.62525704226,
+        "texture_proxy": 6.79472017288208,
+        "encode_time_proxy": null,
+        "analysis_scene_threshold": 9.842948442464403
+      }
+    },
+    {
+      "clip_id": "real_4k_alt_12s",
+      "path": "/home/arnavbansal/HPC_clean_clone/experiments/benchmark_suite/inputs/real_4k_alt_12s.mp4",
+      "source_kind": "real",
+      "source_path": "/home/arnavbansal/HPC_clean_clone/0fd92ee0_203678-922748476.mp4",
+      "duration_label": "12s",
+      "resolution_label": "2160p",
+      "content_class": "static-low-motion",
+      "metadata": {
+        "duration": 12.012,
+        "width": 3840,
+        "height": 2160,
+        "fps": 29.97002997002997,
+        "bitrate": 65735892.0
+      },
+      "feature_summary": {
+        "duration": 12.012,
+        "width": 3840,
+        "height": 2160,
+        "fps": 29.97002997002997,
+        "bitrate": 65735892.0,
+        "bpp": 0.26444198451967593,
+        "scene_change_proxy": 0.125,
+        "motion_proxy": 2.695071359475454,
+        "luma_variance": 9510.121915209775,
+        "texture_proxy": 4.488132476806641,
+        "encode_time_proxy": null,
+        "analysis_scene_threshold": 3.3806320317114054
+      }
+    },
+    {
+      "clip_id": "synthetic_smptebars_720p_12s",
+      "path": "/home/arnavbansal/HPC_clean_clone/experiments/benchmark_suite/inputs/synthetic_smptebars_720p_12s.mp4",
+      "source_kind": "synthetic",
+      "source_path": "smptebars",
+      "duration_label": "12s",
+      "resolution_label": "720p",
+      "content_class": "static-low-motion",
+      "metadata": {
+        "duration": 12.0,
+        "width": 1280,
+        "height": 720,
+        "fps": 30.0,
+        "bitrate": 154758.0
+      },
+      "feature_summary": {
+        "duration": 12.0,
+        "width": 1280,
+        "height": 720,
+        "fps": 30.0,
+        "bitrate": 154758.0,
+        "bpp": 0.005597439236111111,
+        "scene_change_proxy": 0.0,
+        "motion_proxy": 0.0,
+        "luma_variance": 5134.549208531891,
+        "texture_proxy": 3.5017004013061523,
+        "encode_time_proxy": null,
+        "analysis_scene_threshold": 0.0
+      }
+    },
+    {
+      "clip_id": "synthetic_smptebars_1080p_30s",
+      "path": "/home/arnavbansal/HPC_clean_clone/experiments/benchmark_suite/inputs/synthetic_smptebars_1080p_30s.mp4",
+      "source_kind": "synthetic",
+      "source_path": "smptebars",
+      "duration_label": "30s",
+      "resolution_label": "1080p",
+      "content_class": "static-low-motion",
+      "metadata": {
+        "duration": 30.0,
+        "width": 1920,
+        "height": 1080,
+        "fps": 30.0,
+        "bitrate": 147804.0
+      },
+      "feature_summary": {
+        "duration": 30.0,
+        "width": 1920,
+        "height": 1080,
+        "fps": 30.0,
+        "bitrate": 147804.0,
+        "bpp": 0.0023759645061728397,
+        "scene_change_proxy": 0.0,
+        "motion_proxy": 0.0,
+        "luma_variance": 5135.760189791894,
+        "texture_proxy": 3.501505136489868,
+        "encode_time_proxy": null,
+        "analysis_scene_threshold": 0.0
+      }
+    },
+    {
+      "clip_id": "synthetic_smptebars_1080p_60s",
+      "path": "/home/arnavbansal/HPC_clean_clone/experiments/benchmark_suite/inputs/synthetic_smptebars_1080p_60s.mp4",
+      "source_kind": "synthetic",
+      "source_path": "smptebars",
+      "duration_label": "60s",
+      "resolution_label": "1080p",
+      "content_class": "static-low-motion",
+      "metadata": {
+        "duration": 60.0,
+        "width": 1920,
+        "height": 1080,
+        "fps": 30.0,
+        "bitrate": 147189.0
+      },
+      "feature_summary": {
+        "duration": 60.0,
+        "width": 1920,
+        "height": 1080,
+        "fps": 30.0,
+        "bitrate": 147189.0,
+        "bpp": 0.0023660783179012346,
+        "scene_change_proxy": 0.0,
+        "motion_proxy": 0.0,
+        "luma_variance": 5135.760189791893,
+        "texture_proxy": 3.5015039443969727,
+        "encode_time_proxy": null,
+        "analysis_scene_threshold": 0.0
+      }
+    },
+    {
+      "clip_id": "synthetic_testsrc2_720p_12s",
+      "path": "/home/arnavbansal/HPC_clean_clone/experiments/benchmark_suite/inputs/synthetic_testsrc2_720p_12s.mp4",
+      "source_kind": "synthetic",
+      "source_path": "testsrc2",
+      "duration_label": "12s",
+      "resolution_label": "720p",
+      "content_class": "static-low-motion",
+      "metadata": {
+        "duration": 12.0,
+        "width": 1280,
+        "height": 720,
+        "fps": 30.0,
+        "bitrate": 9765505.0
+      },
+      "feature_summary": {
+        "duration": 12.0,
+        "width": 1280,
+        "height": 720,
+        "fps": 30.0,
+        "bitrate": 9765505.0,
+        "bpp": 0.3532083695023148,
+        "scene_change_proxy": 0.125,
+        "motion_proxy": 3.570384830236435,
+        "luma_variance": 4207.245250031915,
+        "texture_proxy": 6.21523904800415,
+        "encode_time_proxy": null,
+        "analysis_scene_threshold": 4.484368183910147
+      }
+    },
+    {
+      "clip_id": "synthetic_testsrc2_1080p_30s",
+      "path": "/home/arnavbansal/HPC_clean_clone/experiments/benchmark_suite/inputs/synthetic_testsrc2_1080p_30s.mp4",
+      "source_kind": "synthetic",
+      "source_path": "testsrc2",
+      "duration_label": "30s",
+      "resolution_label": "1080p",
+      "content_class": "static-low-motion",
+      "metadata": {
+        "duration": 30.0,
+        "width": 1920,
+        "height": 1080,
+        "fps": 30.0,
+        "bitrate": 20057022.0
+      },
+      "feature_summary": {
+        "duration": 30.0,
+        "width": 1920,
+        "height": 1080,
+        "fps": 30.0,
+        "bitrate": 20057022.0,
+        "bpp": 0.32241869212962965,
+        "scene_change_proxy": 0.15,
+        "motion_proxy": 2.6606160004933677,
+        "luma_variance": 4253.351616804948,
+        "texture_proxy": 5.521541118621826,
+        "encode_time_proxy": null,
+        "analysis_scene_threshold": 3.21353590687123
+      }
+    },
+    {
+      "clip_id": "synthetic_testsrc2_1080p_60s",
+      "path": "/home/arnavbansal/HPC_clean_clone/experiments/benchmark_suite/inputs/synthetic_testsrc2_1080p_60s.mp4",
+      "source_kind": "synthetic",
+      "source_path": "testsrc2",
+      "duration_label": "60s",
+      "resolution_label": "1080p",
+      "content_class": "static-low-motion",
+      "metadata": {
+        "duration": 60.0,
+        "width": 1920,
+        "height": 1080,
+        "fps": 30.0,
+        "bitrate": 20062567.0
+      },
+      "feature_summary": {
+        "duration": 60.0,
+        "width": 1920,
+        "height": 1080,
+        "fps": 30.0,
+        "bitrate": 20062567.0,
+        "bpp": 0.3225078285751029,
+        "scene_change_proxy": 0.15833333333333333,
+        "motion_proxy": 2.7069492717583974,
+        "luma_variance": 4251.18026769524,
+        "texture_proxy": 5.555716037750244,
+        "encode_time_proxy": null,
+        "analysis_scene_threshold": 3.2048919737526727
+      }
+    },
+    {
+      "clip_id": "synthetic_scenecut_1080p_12s",
+      "path": "/home/arnavbansal/HPC_clean_clone/experiments/benchmark_suite/inputs/synthetic_scenecut_1080p_12s.mp4",
+      "source_kind": "synthetic",
+      "source_path": "scenecut",
+      "duration_label": "12s",
+      "resolution_label": "1080p",
+      "content_class": "medium-to-high-motion",
+      "metadata": {
+        "duration": 12.0,
+        "width": 1920,
+        "height": 1080,
+        "fps": 30.0,
+        "bitrate": 21502916.0
+      },
+      "feature_summary": {
+        "duration": 12.0,
+        "width": 1920,
+        "height": 1080,
+        "fps": 30.0,
+        "bitrate": 21502916.0,
+        "bpp": 0.3456615869341564,
+        "scene_change_proxy": 0.125,
+        "motion_proxy": 17.96143577496211,
+        "luma_variance": 2523.6903999187907,
+        "texture_proxy": 6.406745433807373,
+        "encode_time_proxy": null,
+        "analysis_scene_threshold": 42.125963836283475
+      }
+    },
+    {
+      "clip_id": "synthetic_scenecut_1080p_30s",
+      "path": "/home/arnavbansal/HPC_clean_clone/experiments/benchmark_suite/inputs/synthetic_scenecut_1080p_30s.mp4",
+      "source_kind": "synthetic",
+      "source_path": "scenecut",
+      "duration_label": "30s",
+      "resolution_label": "1080p",
+      "content_class": "medium-to-high-motion",
+      "metadata": {
+        "duration": 30.0,
+        "width": 1920,
+        "height": 1080,
+        "fps": 30.0,
+        "bitrate": 22288743.0
+      },
+      "feature_summary": {
+        "duration": 30.0,
+        "width": 1920,
+        "height": 1080,
+        "fps": 30.0,
+        "bitrate": 22288743.0,
+        "bpp": 0.35829383680555554,
+        "scene_change_proxy": 0.05,
+        "motion_proxy": 10.945839734872182,
+        "luma_variance": 2578.960263602786,
+        "texture_proxy": 5.8264288902282715,
+        "encode_time_proxy": null,
+        "analysis_scene_threshold": 27.897046593453986
+      }
+    },
+    {
+      "clip_id": "synthetic_scenecut_1080p_60s",
+      "path": "/home/arnavbansal/HPC_clean_clone/experiments/benchmark_suite/inputs/synthetic_scenecut_1080p_60s.mp4",
+      "source_kind": "synthetic",
+      "source_path": "scenecut",
+      "duration_label": "60s",
+      "resolution_label": "1080p",
+      "content_class": "medium-motion",
+      "metadata": {
+        "duration": 60.0,
+        "width": 1920,
+        "height": 1080,
+        "fps": 30.0,
+        "bitrate": 28146790.0
+      },
+      "feature_summary": {
+        "duration": 60.0,
+        "width": 1920,
+        "height": 1080,
+        "fps": 30.0,
+        "bitrate": 28146790.0,
+        "bpp": 0.45246254501028804,
+        "scene_change_proxy": 0.025,
+        "motion_proxy": 8.767046032349269,
+        "luma_variance": 2484.7434347549524,
+        "texture_proxy": 6.224200248718262,
+        "encode_time_proxy": null,
+        "analysis_scene_threshold": 21.666120674571655
+      }
+    },
+    {
+      "clip_id": "synthetic_stress_1080p_30s",
+      "path": "/home/arnavbansal/HPC_clean_clone/experiments/benchmark_suite/inputs/synthetic_stress_1080p_30s.mp4",
+      "source_kind": "synthetic",
+      "source_path": "stress",
+      "duration_label": "30s",
+      "resolution_label": "1080p",
+      "content_class": "medium-to-high-motion",
+      "metadata": {
+        "duration": 30.0,
+        "width": 1920,
+        "height": 1080,
+        "fps": 30.0,
+        "bitrate": 49494173.0
+      },
+      "feature_summary": {
+        "duration": 30.0,
+        "width": 1920,
+        "height": 1080,
+        "fps": 30.0,
+        "bitrate": 49494173.0,
+        "bpp": 0.795623922968107,
+        "scene_change_proxy": 0.16666666666666666,
+        "motion_proxy": 12.778330779075622,
+        "luma_variance": 1839.7385656788513,
+        "texture_proxy": 9.425979614257812,
+        "encode_time_proxy": null,
+        "analysis_scene_threshold": 16.683874366749563
+      }
+    },
+    {
+      "clip_id": "synthetic_stress_2160p_12s",
+      "path": "/home/arnavbansal/HPC_clean_clone/experiments/benchmark_suite/inputs/synthetic_stress_2160p_12s.mp4",
+      "source_kind": "synthetic",
+      "source_path": "stress",
+      "duration_label": "12s",
+      "resolution_label": "2160p",
+      "content_class": "medium-to-high-motion",
+      "metadata": {
+        "duration": 12.0,
+        "width": 3840,
+        "height": 2160,
+        "fps": 30.0,
+        "bitrate": 122333013.0
+      },
+      "feature_summary": {
+        "duration": 12.0,
+        "width": 3840,
+        "height": 2160,
+        "fps": 30.0,
+        "bitrate": 122333013.0,
+        "bpp": 0.4916289424189815,
+        "scene_change_proxy": 0.16666666666666666,
+        "motion_proxy": 14.691422462463379,
+        "luma_variance": 2130.8943575356284,
+        "texture_proxy": 9.309635162353516,
+        "encode_time_proxy": null,
+        "analysis_scene_threshold": 19.337509452121303
+      }
+    }
+  ]
+}

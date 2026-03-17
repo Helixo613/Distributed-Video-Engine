@@ -1,0 +1,5 @@
+budget,mean_speedup,mean_efficiency_pct,serial_selections,parallel_selections
+w<=2,1.56,80.5,1,12
+w<=4,2.39,62.6,1,12
+w<=8,2.84,52.5,1,12
+unconstrained,2.84,52.5,1,12

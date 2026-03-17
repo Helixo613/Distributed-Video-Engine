@@ -356,7 +356,7 @@ Examples:
                         "chunk_times": [chunk["elapsed"] for chunk in record["actual_chunk_runtime"]],
                     }
                 },
-                "scheduler": record["scheduler"],
+                "selection": record.get("selection"),
             }
             with open(args.export, "w", encoding="utf-8") as handle:
                 json.dump(legacy_payload, handle, indent=2)

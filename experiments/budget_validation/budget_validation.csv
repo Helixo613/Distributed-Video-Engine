@@ -1,0 +1,13 @@
+video_stem,workload_class,pipeline_label,budget_label,selected_regime,selected_workers,selected_chunks,selected_policy,predicted_e2e_time,measured_mean_time,measured_serial_time,prediction_error,measured_speedup,predicted_speedup,measured_efficiency
+real_clipchamp_720p_3s,light,inference-normalization,w<=2,serial,1,1,serial,0.499237,0.499237,0.499237,0.0,1.0,1.0,1.0
+real_clipchamp_720p_3s,light,inference-normalization,w<=4,serial,1,1,serial,0.499237,0.499237,0.499237,0.0,1.0,1.0,1.0
+real_clipchamp_720p_3s,light,inference-normalization,w<=8,serial,1,1,serial,0.499237,0.499237,0.499237,0.0,1.0,1.0,1.0
+real_clipchamp_720p_3s,light,inference-normalization,unconstrained,serial,1,1,serial,0.499237,0.499237,0.499237,0.0,1.0,1.0,1.0
+real_clipchamp_720p_12s,medium,vision-enhancement,w<=2,parallel,2,2,equal-duration,2.667133,2.581617,4.331205,0.033125,1.6777,1.6239,0.8389
+real_clipchamp_720p_12s,medium,vision-enhancement,w<=4,parallel,4,4,equal-duration,1.750599,1.736635,4.331205,0.008041,2.494,2.4741,0.6235
+real_clipchamp_720p_12s,medium,vision-enhancement,w<=8,parallel,4,4,equal-duration,1.750599,1.667937,4.331205,0.04956,2.5967,2.4741,0.6492
+real_clipchamp_720p_12s,medium,vision-enhancement,unconstrained,parallel,4,4,equal-duration,1.7506,1.708044,4.331205,0.024915,2.5358,2.4741,0.6339
+real_clipchamp_1080p_30s,heavy,robust-preprocessing,w<=2,parallel,2,2,equal-duration,24.248768,22.190765,39.784735,0.092741,1.7929,1.6407,0.8964
+real_clipchamp_1080p_30s,heavy,robust-preprocessing,w<=4,parallel,4,4,rate-adjusted,14.863896,13.455841,39.784735,0.104643,2.9567,2.6766,0.7392
+real_clipchamp_1080p_30s,heavy,robust-preprocessing,w<=8,parallel,8,8,rate-adjusted,10.267464,10.225064,39.784735,0.004147,3.8909,3.8748,0.4864
+real_clipchamp_1080p_30s,heavy,robust-preprocessing,unconstrained,parallel,8,8,rate-adjusted,10.267464,10.044199,39.784735,0.022228,3.961,3.8748,0.4951

@@ -1,0 +1,9 @@
+scope,n,mae_pct,median_ae_pct,within_10pct,within_20pct
+overall,39,7.2,3.9,29/39,35/39
+parallel-only,36,7.8,4.0,26/36,32/36
+workload:heavy,12,2.9,3.4,12/12,12/12
+workload:medium,12,3.9,3.4,11/12,12/12
+workload:light,15,13.2,15.8,6/15,11/15
+content:medium-to-high-motion,9,9.1,4.4,6/9,8/9
+content:scene-cut-heavy,9,7.1,4.4,6/9,9/9
+content:static-low-motion,21,6.4,3.3,17/21,18/21

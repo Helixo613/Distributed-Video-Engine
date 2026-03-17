@@ -93,6 +93,15 @@ def _build_cost_balanced_chunks(
     if not segments or len(segments) < num_chunks:
         return _equal_duration_plan(input_path, metadata, num_chunks, temp_dir, estimated_total_runtime)
 
+    # If segment costs are nearly uniform, cost-balanced partitioning cannot improve
+    # over equal-duration and risks creating runt chunks from noisy cost estimates.
+    mean_cost = sum(segment_costs) / len(segment_costs)
+    if mean_cost > 0:
+        variance = sum((c - mean_cost) ** 2 for c in segment_costs) / len(segment_costs)
+        cv = (variance ** 0.5) / mean_cost
+        if cv < 0.20:
+            return _equal_duration_plan(input_path, metadata, num_chunks, temp_dir, estimated_total_runtime)
+
     total_cost = float(sum(segment_costs))
     target_cost = total_cost / max(1, num_chunks)
     chunks: list[ChunkTask] = []
@@ -146,22 +155,27 @@ def _build_cost_balanced_chunks(
     if chunk_id < num_chunks and chunks:
         remaining = num_chunks - chunk_id
         tail_start = chunks[-1].start + chunks[-1].duration
-        tail_duration = max(0.001, metadata.duration - tail_start)
-        for extra_id in range(remaining):
-            duration = tail_duration / remaining if extra_id < remaining - 1 else max(
-                0.001, metadata.duration - tail_start - (tail_duration / remaining) * extra_id
-            )
-            chunk_start = tail_start + (tail_duration / remaining) * extra_id
-            chunks.append(
-                ChunkTask(
-                    chunk_id=chunk_id + extra_id,
-                    start=round(chunk_start, 6),
-                    duration=round(duration, 6),
-                    input_path=input_path,
-                    output_path=_chunk_output_path(temp_dir, chunk_id + extra_id),
-                    estimated_cost=None,
-                    rationale="Tail refinement after cost-balanced partitioning",
+        tail_duration = metadata.duration - tail_start
+        if tail_duration > 1e-3:
+            for extra_id in range(remaining):
+                duration = tail_duration / remaining if extra_id < remaining - 1 else max(
+                    0.001, metadata.duration - tail_start - (tail_duration / remaining) * extra_id
                 )
+                chunk_start = tail_start + (tail_duration / remaining) * extra_id
+                chunks.append(
+                    ChunkTask(
+                        chunk_id=chunk_id + extra_id,
+                        start=round(chunk_start, 6),
+                        duration=round(duration, 6),
+                        input_path=input_path,
+                        output_path=_chunk_output_path(temp_dir, chunk_id + extra_id),
+                        estimated_cost=None,
+                        rationale="Tail refinement after cost-balanced partitioning",
+                    )
+                )
+        else:
+            rationale.append(
+                f"Generated {len(chunks)} chunks instead of requested {num_chunks}; no remaining tail duration after cost balancing."
             )
 
     planning_time = time.perf_counter() - start_time
@@ -170,6 +184,120 @@ def _build_cost_balanced_chunks(
         chunks=chunks[:num_chunks],
         rationale=rationale,
         total_estimated_cost=estimated_total_runtime or total_cost,
+        planning_time=planning_time,
+    )
+
+
+def _interpolate_rate(profile: list[tuple[float, float]], pos: float) -> float:
+    """Linearly interpolate encode rate at a given position from a sorted profile."""
+    if pos <= profile[0][0]:
+        return profile[0][1]
+    if pos >= profile[-1][0]:
+        return profile[-1][1]
+    for i in range(len(profile) - 1):
+        p0, r0 = profile[i]
+        p1, r1 = profile[i + 1]
+        if p0 <= pos <= p1:
+            t = (pos - p0) / max(1e-9, p1 - p0)
+            return r0 + t * (r1 - r0)
+    return profile[-1][1]
+
+
+def _rate_adjusted_plan(
+    input_path: str,
+    metadata: VideoMetadata,
+    num_chunks: int,
+    temp_dir: str,
+    rate_profile: list[tuple[float, float]],
+    estimated_total_runtime: Optional[float] = None,
+) -> PartitionPlan:
+    """Create chunks with durations inversely proportional to local encode rate.
+
+    The rate profile maps video positions to measured encode rates (seconds of
+    encode per second of video).  Chunks are placed so that each chunk has
+    approximately equal predicted encode time, reducing straggler-driven
+    makespan inflation.
+    """
+    start_time = time.perf_counter()
+
+    if len(rate_profile) < 2 or num_chunks <= 1:
+        return _equal_duration_plan(input_path, metadata, num_chunks, temp_dir, estimated_total_runtime)
+
+    profile = sorted(rate_profile, key=lambda x: x[0])
+
+    # Check rate uniformity — if uniform, equal-duration is optimal.
+    rates = [r for _, r in profile]
+    mean_rate = sum(rates) / len(rates)
+    if mean_rate > 0:
+        max_dev = max(abs(r - mean_rate) / mean_rate for r in rates)
+        if max_dev < 0.05:
+            plan = _equal_duration_plan(input_path, metadata, num_chunks, temp_dir, estimated_total_runtime)
+            plan.rationale.append(
+                f"Rate-adjusted: rate profile uniform (max deviation {max_dev:.1%}), using equal-duration."
+            )
+            return plan
+
+    # Compute cumulative work using midpoint integration.
+    n_steps = 200
+    step = metadata.duration / n_steps
+    cum_work = [0.0]
+    for i in range(n_steps):
+        mid = (i + 0.5) * step
+        cum_work.append(cum_work[-1] + _interpolate_rate(profile, mid) * step)
+    total_work = cum_work[-1]
+    target_per_chunk = total_work / num_chunks
+
+    # Find chunk boundaries that equalize predicted work.
+    boundaries: list[float] = [0.0]
+    for c in range(1, num_chunks):
+        target = c * target_per_chunk
+        for j in range(1, len(cum_work)):
+            if cum_work[j] >= target:
+                frac = (target - cum_work[j - 1]) / max(1e-9, cum_work[j] - cum_work[j - 1])
+                pos = ((j - 1) + frac) * step
+                boundaries.append(min(metadata.duration, max(boundaries[-1] + 0.1, pos)))
+                break
+        else:
+            boundaries.append(min(metadata.duration, boundaries[-1] + metadata.duration / num_chunks))
+    boundaries.append(metadata.duration)
+
+    chunks: list[ChunkTask] = []
+    for chunk_id in range(num_chunks):
+        s = boundaries[chunk_id]
+        d = max(0.001, boundaries[chunk_id + 1] - s)
+        # Predicted cost from rate integration.
+        chunk_work = 0.0
+        ns = max(1, int(d / step * 2))
+        for i in range(ns):
+            mid = s + (i + 0.5) * d / ns
+            chunk_work += _interpolate_rate(profile, mid) * d / ns
+        est_cost = chunk_work
+        if estimated_total_runtime and total_work > 0:
+            est_cost = estimated_total_runtime * (chunk_work / total_work)
+
+        chunks.append(
+            ChunkTask(
+                chunk_id=chunk_id,
+                start=round(s, 6),
+                duration=round(d, 6),
+                input_path=input_path,
+                output_path=_chunk_output_path(temp_dir, chunk_id),
+                estimated_cost=est_cost,
+                rationale=f"Rate-adjusted chunk {chunk_id}: {s:.3f}-{s + d:.3f}s",
+            )
+        )
+
+    planning_time = time.perf_counter() - start_time
+    durations = [c.duration for c in chunks]
+    equal_dur = metadata.duration / num_chunks
+    return PartitionPlan(
+        policy="rate-adjusted",
+        chunks=chunks,
+        rationale=[
+            f"Rate-adjusted partitioning: {num_chunks} chunks from {len(rate_profile)}-point profile.",
+            f"Duration range: {min(durations):.3f}-{max(durations):.3f}s (vs equal {equal_dur:.3f}s).",
+        ],
+        total_estimated_cost=float(estimated_total_runtime or total_work),
         planning_time=planning_time,
     )
 
@@ -183,9 +311,14 @@ def build_partition_plan(
     feature_result: Optional[FeatureExtractionResult] = None,
     estimated_total_runtime: Optional[float] = None,
     estimator: Optional[LinearCostEstimator] = None,
+    rate_profile: Optional[list[tuple[float, float]]] = None,
 ) -> PartitionPlan:
     if policy == "serial":
         return _serial_plan(input_path, metadata, temp_dir, estimated_total_runtime)
+    if policy == "rate-adjusted" and rate_profile:
+        return _rate_adjusted_plan(
+            input_path, metadata, num_chunks, temp_dir, rate_profile, estimated_total_runtime,
+        )
     if policy == "equal-duration" or feature_result is None:
         return _equal_duration_plan(input_path, metadata, num_chunks, temp_dir, estimated_total_runtime)
     if policy not in {"heuristic-adaptive", "ml-adaptive"}:

@@ -1,39 +1,60 @@
-# Distributed Video Engine
+# Adaptive Execution Selection for Media Preprocessing in Cloud AI Pipelines
 
-Distributed Video Engine is a research-oriented implementation base for **complexity-aware adaptive partitioning and overhead-aware scheduling for FFmpeg-based parallel video processing**.
+Research prototype for **overhead-aware adaptive execution selection** applied to media preprocessing workloads in cloud/AI systems.
 
-The repository still contains the original API, frontend, and Streamlit surfaces for compatibility, but the primary development path is now the modular research pipeline in `src/`.
+The system decides — before execution — whether a media preprocessing job should run serially or in parallel, and if parallel, selects the worker count, chunk count, and partitioning strategy using a calibrated runtime cost model. This targets the preprocessing stage of AI ingestion pipelines where video must be normalized, enhanced, or denoised before downstream ML inference.
 
-## Research Focus
+## Problem
 
-- Complexity-aware feature extraction for low-cost video characterization
-- Adaptive partitioning that balances estimated compute cost instead of only duration
-- Overhead-aware worker and chunk-count selection with an explicit runtime model
-- Reproducible experiment logging for baselines, ablations, and repeated trials
-- Optional lightweight linear regression for segment-cost prediction
+Cloud-based AI pipelines frequently preprocess media (resize, normalize, denoise, sharpen) before feeding it to vision models, multimodal embeddings, or analytics systems. The preprocessing stage is often parallelized with fixed configurations that ignore:
+
+- **Content complexity**: static surveillance footage vs. high-motion action clips require different resources
+- **Workload intensity**: lightweight normalization vs. heavy denoising have very different compute profiles
+- **Orchestration overhead**: splitting, dispatching, and merging chunks has non-trivial cost that can dominate short or lightweight jobs
+
+Fixed parallelization can waste cloud resources on jobs where serial execution would suffice, and under-provisions jobs that would benefit from more workers.
+
+## Approach
+
+An **execution selector** that uses a calibrated overhead-aware cost model to choose the execution regime:
+
+1. **Feature extraction**: Low-cost video characterization (motion, scene complexity, bitrate distribution)
+2. **Cost model prediction**: Estimate serial runtime, parallel makespan with overhead penalties, and orchestration costs (dispatch, merge, per-process startup)
+3. **Configuration search**: Evaluate candidate (workers, chunks, policy) configurations against the cost model
+4. **Regime selection**: Choose serial when overhead would dominate, parallel when the predicted speedup exceeds a safety margin
+5. **Resource-budgeted mode**: Optionally constrain the search to a maximum worker budget, selecting the best plan within a cloud resource allocation limit
+
+## Preprocessing Workloads
+
+Workloads represent preprocessing pipelines at varying compute intensity:
+
+| Class | Pipeline Label | Description | Filter Chain |
+|-------|---------------|-------------|-------------|
+| `light` | inference-normalization | Color/brightness normalization for ML inference preparation | `eq=contrast=1.02:brightness=0.01:saturation=1.03` |
+| `medium` | vision-enhancement | Sharpening for vision analytics (feature extraction, action recognition) | `unsharp=5:5:1.5:5:5:0.5` |
+| `heavy` | robust-preprocessing | Multi-stage denoise+sharpen for noisy media before AI model ingestion | `hqdn3d=1.5:1.5:6:6,gblur=sigma=1.2,unsharp=7:7:1.8:7:7:0.8` |
 
 ## Core Pipeline
 
 1. `ffprobe` metadata extraction
-2. Low-resolution feature extraction
+2. Low-resolution feature extraction (motion, scene cuts, texture complexity)
 3. Partition planning: `serial`, `equal-duration`, `heuristic-adaptive`, or `ml-adaptive`
-4. Optional scheduler search over bounded worker/chunk candidates
-5. FFmpeg execution with one FFmpeg thread per worker process
+4. Execution selector search over bounded worker/chunk candidates
+5. FFmpeg-based preprocessing with one thread per worker process
 6. Concat-based merge
-7. Quality and performance evaluation with JSON/CSV logging
+7. Quality and performance evaluation with structured logging
 
 ## Main Modules
 
-- `src/ffmpeg_utils.py`: FFmpeg/ffprobe wrappers and baseline encode helpers
-- `src/feature_extractor.py`: low-cost complexity feature extraction
-- `src/adaptive_partitioner.py`: baseline and adaptive chunk planning
-- `src/scheduler.py`: overhead-aware configuration search
-- `src/pipeline.py`: end-to-end orchestration and structured run records
-- `src/evaluator.py`: PSNR/SSIM and optional VMAF hooks
-- `src/metrics_logger.py`: JSONL and CSV persistence for experiment aggregation
-- `src/experiment_runner.py`: reproducible sweeps for baselines and ablations
-- `src/cost_estimator.py`: optional lightweight linear predictor
-- `src/train_cost_model.py`: training entry point for the optional predictor
+- `src/pipeline.py`: End-to-end orchestration and structured run records
+- `src/scheduler.py`: Overhead-aware execution selector with configuration search
+- `src/feature_extractor.py`: Low-cost video complexity characterization
+- `src/adaptive_partitioner.py`: Content-aware chunk planning
+- `src/experiment_runner.py`: Reproducible benchmark sweeps across baselines
+- `src/summarize_experiment_results.py`: Summary generation with preprocessing pipeline metadata
+- `src/calibration_analysis.py`: Cost model calibration and prediction quality analysis
+- `src/evaluator.py`: PSNR/SSIM quality evaluation
+- `src/cost_estimator.py`: Optional lightweight linear segment-cost predictor
 
 ## Quick Start
 
@@ -41,7 +62,6 @@ The repository still contains the original API, frontend, and Streamlit surfaces
 
 - Python 3.10+
 - FFmpeg installed and available in `PATH`
-- Node.js 18+ only if you want the legacy frontend
 
 ### Installation
 
@@ -51,7 +71,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Single Research Run
+### Single Preprocessing Run
 
 ```bash
 python src/render_engine.py input.mp4 \
@@ -66,67 +86,67 @@ python src/render_engine.py input.mp4 \
 ```bash
 python src/experiment_runner.py input1.mp4 input2.mp4 \
   --output-dir experiments/paper_run \
-  --baselines serial,static-equal,adaptive-fixed,adaptive-scheduled \
+  --baselines serial,static-equal,adaptive-scheduled \
   --workers 1,2,4,6,8,12,16 \
   --chunk-multipliers 1.0,1.5,2.0 \
+  --workloads light,medium,heavy \
   --trials 3
 ```
 
-### Optional Cost Model Training
+### Calibration Analysis
 
 ```bash
-python src/train_cost_model.py experiments/paper_run/segments.jsonl \
-  --output experiments/paper_run/cost_model.json
+python src/calibration_analysis.py experiments/paper_run/runs.csv \
+  --output-json experiments/paper_run/calibration_report.json
 ```
 
-## Baselines And Ablations
+### Resource-Budgeted Selection Analysis
 
-Supported presets through `src/experiment_runner.py`:
+```bash
+python src/budget_analysis.py experiments/paper_run/runs.csv \
+  --output-json experiments/paper_run/budget_analysis.json \
+  --output-csv experiments/paper_run/budget_analysis.csv \
+  --budgets 2,4,8
+```
 
-- `serial`
-- `static-equal`
-- `adaptive-fixed`
-- `adaptive-scheduled`
-- `ml-adaptive-scheduled` if a trained model is provided
+## Baselines
 
-These map directly to paper-friendly ablations:
-
-- without adaptive partitioning
-- without scheduler
-- without ML predictor
-- full system
+| Preset | Partitioning | Selector | Role |
+|--------|-------------|----------|------|
+| `serial` | None | No | Lower bound: single-process execution |
+| `static-equal` | Equal-duration | No | Fixed parallel: no content awareness |
+| `adaptive-scheduled` | Heuristic-adaptive | Yes | Full system: overhead-aware execution selection |
 
 ## Outputs
 
-Each run can log:
+Each experiment produces:
 
-- video metadata and feature summaries
-- planned chunk boundaries and planning rationale
-- predicted and actual chunk runtimes
-- overhead breakdowns for probe, feature extraction, scheduling, partitioning, dispatch, and merge
-- total runtime, throughput, speedup, efficiency, and imbalance ratios
-- output size, bitrate, PSNR, SSIM, and optional VMAF
+- `runs.csv` / `runs.jsonl`: Per-trial metrics (runtime, speedup, prediction error, quality)
+- `segments.jsonl`: Per-segment feature and runtime data
+- `summary.json` / `summary.csv`: Aggregated results with preprocessing pipeline metadata
+- `calibration_report.json`: Cost model prediction accuracy and overhead analysis
+- `budget_analysis.json` / `budget_analysis.csv`: Resource-budgeted selection tradeoffs
+- `manifest.json`: Experiment configuration and preprocessing pipeline descriptions
 
-Structured outputs are written as:
+## Reproducing the Final Package
 
-- `runs.jsonl`
-- `runs.csv`
-- `segments.jsonl`
-- per-run JSON records when requested
+```bash
+bash scripts/reproduce_final_package.sh experiments/paper_run_final
+```
 
-## Legacy Surfaces
-
-The following remain available but are no longer the primary framing of the project:
-
-- `server.py`: compatibility API for job submission and previews
-- `frontend/`: legacy dashboard
-- `demo_app.py`: legacy Streamlit interface
-- `v2/src/render_engine_v2.py`: compatibility wrapper for the old V2 path
+This runs the full benchmark suite (117 runs across 13 cases), generates summaries, calibration reports, and budget analysis in a single command. See `experiments/paper_run_final/paper_assets/reproducibility_note.md` for details.
 
 ## Additional Documentation
 
-- [Architecture Overview](/home/arnavbansal/HPC_clean_clone/docs/PROJECT_ANALYSIS.md)
-- [Technical Architecture](/home/arnavbansal/HPC_clean_clone/docs/GEMINI.md)
-- [Experiment Guide](/home/arnavbansal/HPC_clean_clone/docs/EXPERIMENTS.md)
-- [Module Map](/home/arnavbansal/HPC_clean_clone/docs/MODULE_MAP.md)
-- [Paper Alignment](/home/arnavbansal/HPC_clean_clone/docs/PAPER_ALIGNMENT.md)
+- [Paper Alignment](docs/PAPER_ALIGNMENT.md)
+- [Experiment Guide](docs/EXPERIMENTS.md)
+- [Module Map](docs/MODULE_MAP.md)
+- [Architecture Overview](docs/PROJECT_ANALYSIS.md)
+
+## Legacy Surfaces
+
+The following remain available but are not the primary framing:
+
+- `server.py`: Compatibility API for job submission
+- `frontend/`: Legacy dashboard
+- `demo_app.py`: Legacy Streamlit interface

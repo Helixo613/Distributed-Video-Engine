@@ -12,6 +12,8 @@ data/
 *.mov
 *.avi
 *.mkv
+*.Zone.Identifier
+*:Zone.Identifier
 
 # Temporary Workspaces
 .temp_chunks/
@@ -35,3 +37,9 @@ frontend/.vite/
 
 # Temporary debug folders
 Errors in Ui/
+
+# Experiment temporaries
+experiments/tmp_*
+experiments/*/tmp_run_*
+experiments/*/tmp_profile_*
+experiments/*/*.mp4
