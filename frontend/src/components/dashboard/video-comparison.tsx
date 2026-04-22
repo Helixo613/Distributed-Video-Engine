@@ -28,12 +28,24 @@ function formatTime(seconds: number): string {
   return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
+function parseSeconds(value?: string): number | null {
+  if (!value) return null;
+  const parsed = parseFloat(value.replace('s', ''));
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
 export function VideoComparison({ job }: VideoComparisonProps) {
   const hasData = Boolean(job.output && job.comparison_report);
   const primarySourceUrl = toSourceRoute(job.input);
   const fallbackSourceUrl = apiUrl(`/files/${job.input.split('/').map((p) => encodeURIComponent(p)).join('/')}`);
   const outputUrl = job.output ? apiUrl(job.output) : '';
+  const serialOutputUrl = job.serial_output ? apiUrl(job.serial_output) : null;
   const report = job.comparison_report;
+  const serialSeconds = parseSeconds(job.serial_actual_time);
+  const distributedSeconds = parseSeconds(job.duration);
+  const exactSpeedup =
+    report?.actual_speedup ??
+    (serialSeconds && distributedSeconds && distributedSeconds > 0 ? serialSeconds / distributedSeconds : null);
 
   const originalRef = useRef<HTMLVideoElement>(null);
   const processedRef = useRef<HTMLVideoElement>(null);
@@ -247,6 +259,28 @@ export function VideoComparison({ job }: VideoComparisonProps) {
         <MetricCard label="Input Size" value={`${report.input_size_mb.toFixed(2)} MB`} />
         <MetricCard label="Output Size" value={`${report.output_size_mb.toFixed(2)} MB`} />
       </div>
+
+      {serialOutputUrl && (
+        <div className="bg-[#0a0a0a] border border-[#222] rounded-xl p-4 mb-4">
+          <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider mb-3">Strict Benchmark: Serial vs Distributed</p>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+            <MetricCard label="Serial Time (Actual)" value={job.serial_actual_time || 'N/A'} />
+            <MetricCard label="Distributed Time" value={job.duration || 'N/A'} />
+            <MetricCard label="Exact Speedup" value={exactSpeedup ? `${exactSpeedup.toFixed(2)}x` : 'N/A'} />
+            <MetricCard label="Serial Mode" value={report.serial_mode === 'full' ? 'Full Run' : 'Projected'} />
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="bg-black border border-[#222] rounded-xl p-3">
+              <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider mb-2">Serial Output</p>
+              <video src={serialOutputUrl} controls className="w-full rounded-lg bg-black aspect-video" preload="metadata" />
+            </div>
+            <div className="bg-black border border-[#222] rounded-xl p-3">
+              <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider mb-2">Distributed Output</p>
+              <video src={outputUrl} controls className="w-full rounded-lg bg-black aspect-video" preload="metadata" />
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="bg-[#0a0a0a] border border-[#222] rounded-xl p-4 flex items-start gap-3">
         <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center shrink-0 mt-0.5">

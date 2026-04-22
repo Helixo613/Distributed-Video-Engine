@@ -25,7 +25,7 @@ from render_engine import (
     analyze_video,
     run_parallel,
     get_smart_config,
-    benchmark_serial
+    benchmark_serial,
 )
 
 # Try to import V2 engine
@@ -80,6 +80,7 @@ class JobCreate(BaseModel):
     workers: Optional[int] = None
     filter_chain: Optional[str] = "unsharp=5:5:1.5:5:5:0.5"
     smart: Optional[bool] = False
+    strict_benchmark: Optional[bool] = False
     engine_version: Optional[str] = "v1"  # "v1" or "v2"
 
 class JobStatus(BaseModel):
@@ -94,10 +95,15 @@ class JobStatus(BaseModel):
     filter_chain: Optional[str] = None
     duration: Optional[str] = None
     projected_serial_time: Optional[str] = None
+    serial_actual_time: Optional[str] = None
+    serial_progress: Optional[int] = 0
+    serial_output: Optional[str] = None
+    parallel_progress: Optional[int] = 0
     smart_config: Optional[Dict[str, Any]] = None
     comparison_report: Optional[Dict[str, Any]] = None
     created_at: Optional[float] = None
     engine_version: Optional[str] = None
+    strict_benchmark: Optional[bool] = None
 
 class ClusterStats(BaseModel):
     cpu_percent: float
@@ -214,6 +220,68 @@ def generate_comparison_report(input_path: str, output_path: str, sample_seconds
         "generated_at": time.time(),
     }
 
+def run_serial_baseline_with_progress(
+    input_path: str,
+    output_path: str,
+    filter_chain: str,
+    total_duration: float,
+    progress_callback=None,
+) -> float:
+    """
+    Run full serial baseline and emit progress updates from FFmpeg's -progress output.
+    """
+    cmd = [
+        "ffmpeg", "-y",
+        "-i", input_path,
+        "-vf", filter_chain,
+        "-c:v", "libx264",
+        "-preset", "ultrafast",
+        "-crf", "23",
+        "-c:a", "copy",
+        "-progress", "pipe:1",
+        "-nostats",
+        "-loglevel", "error",
+        output_path,
+    ]
+
+    start = time.perf_counter()
+    proc = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        bufsize=1,
+    )
+
+    if progress_callback:
+        progress_callback(0)
+
+    assert proc.stdout is not None
+    for line in proc.stdout:
+        line = line.strip()
+        if not line or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        if key == "out_time_ms":
+            try:
+                out_time_seconds = int(value) / 1_000_000
+                if total_duration > 0:
+                    pct = int(min(100, max(0, (out_time_seconds / total_duration) * 100)))
+                    if progress_callback:
+                        progress_callback(pct)
+            except ValueError:
+                continue
+        elif key == "progress" and value == "end":
+            if progress_callback:
+                progress_callback(100)
+
+    return_code = proc.wait()
+    elapsed = time.perf_counter() - start
+    if return_code != 0:
+        err = proc.stderr.read() if proc.stderr else "Serial baseline failed"
+        raise RuntimeError(err.strip() or "Serial baseline failed")
+    return elapsed
+
 # =============================================================================
 # BACKGROUND TASK
 # =============================================================================
@@ -224,7 +292,8 @@ def run_render_task(
     workers: int,
     filter_chain: str,
     smart_mode: bool,
-    engine_version: str
+    engine_version: str,
+    strict_benchmark: bool
 ):
     """Background task wrapper for the render engine."""
     global GLOBAL_STATS
@@ -233,11 +302,15 @@ def run_render_task(
     job = JOBS[job_id]
     job["status"] = "processing"
     job["phase"] = "analyzing"
+    job["serial_progress"] = 0
+    job["parallel_progress"] = 0
 
     job_temp = TEMP_BASE / job_id
     job_temp.mkdir(exist_ok=True)
     output_filename = f"output_{job_id}.mp4"
     output_path = OUTPUT_DIR / output_filename
+    serial_output_path = OUTPUT_DIR / f"serial_{job_id}.mp4"
+    serial_baseline_time: Optional[float] = None
 
     try:
         # 1. Analyze
@@ -265,19 +338,35 @@ def run_render_task(
         # 3. Serial Benchmark (New Phase)
         job["phase"] = "benchmarking"
         print("DEBUG: Benchmarking Serial Performance...", flush=True)
-        # Benchmark 2 seconds of video
-        serial_sample_time = benchmark_serial(input_path, str(job_temp), filter_chain)
-        
-        # Extrapolate to full duration
-        # If we rendered 2s in X seconds, total duration T will take (T/2) * X
-        bench_dur = min(2.0, metadata.duration)
-        projected_serial = (metadata.duration / bench_dur) * serial_sample_time
-        job["projected_serial_time"] = f"{projected_serial:.2f}s"
-        print(f"DEBUG: Projected Serial Time: {projected_serial:.2f}s (Sample: {serial_sample_time:.2f}s)", flush=True)
+        if strict_benchmark:
+            print("DEBUG: Running full serial baseline (strict benchmark mode)...", flush=True)
+            serial_baseline_time = run_serial_baseline_with_progress(
+                input_path=input_path,
+                output_path=str(serial_output_path),
+                filter_chain=filter_chain,
+                total_duration=metadata.duration,
+                progress_callback=lambda p: job.__setitem__("serial_progress", p),
+            )
+            job["serial_actual_time"] = f"{serial_baseline_time:.2f}s"
+            job["projected_serial_time"] = f"{serial_baseline_time:.2f}s"
+            job["serial_output"] = f"/outputs/{serial_output_path.name}"
+            job["serial_progress"] = 100
+            print(f"DEBUG: Serial Baseline Time: {serial_baseline_time:.2f}s", flush=True)
+        else:
+            # Benchmark 2 seconds of video
+            serial_sample_time = benchmark_serial(input_path, str(job_temp), filter_chain)
+
+            # Extrapolate to full duration
+            # If we rendered 2s in X seconds, total duration T will take (T/2) * X
+            bench_dur = min(2.0, metadata.duration)
+            projected_serial = (metadata.duration / bench_dur) * serial_sample_time
+            job["projected_serial_time"] = f"{projected_serial:.2f}s"
+            print(f"DEBUG: Projected Serial Time: {projected_serial:.2f}s (Sample: {serial_sample_time:.2f}s)", flush=True)
 
         # 4. Define callback
         def on_progress(p):
             job["progress"] = p
+            job["parallel_progress"] = p
 
         # 5. Run Parallel
         job["phase"] = "parallel"
@@ -303,6 +392,11 @@ def run_render_task(
             output_path=str(output_path),
             sample_seconds=min(8.0, metadata.duration),
         )
+        if strict_benchmark and serial_baseline_time and serial_baseline_time > 0:
+            job["comparison_report"]["serial_mode"] = "full"
+            job["comparison_report"]["actual_speedup"] = round(serial_baseline_time / elapsed, 3)
+        else:
+            job["comparison_report"]["serial_mode"] = "projected"
 
         # Update global stats
         GLOBAL_STATS["successful_jobs"] += 1
@@ -430,10 +524,15 @@ async def create_job(job_req: JobCreate, background_tasks: BackgroundTasks):
         "input": input_display_path,
         "workers": workers,
         "filter_chain": filter_chain,
+        "serial_actual_time": None,
+        "serial_progress": 0,
+        "serial_output": None,
+        "parallel_progress": 0,
         "created_at": time.time(),
         "smart_config": None,
         "comparison_report": None,
-        "engine_version": engine_version
+        "engine_version": engine_version,
+        "strict_benchmark": bool(job_req.strict_benchmark)
     }
 
     GLOBAL_STATS["total_jobs"] += 1
@@ -445,7 +544,8 @@ async def create_job(job_req: JobCreate, background_tasks: BackgroundTasks):
         workers,
         filter_chain,
         bool(job_req.smart),
-        engine_version
+        engine_version,
+        bool(job_req.strict_benchmark)
     )
 
     return JOBS[job_id]

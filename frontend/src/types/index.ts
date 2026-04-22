@@ -9,6 +9,8 @@ export interface ComparisonReport {
   size_change_pct: number;
   psnr_avg?: number | null;
   ssim_all?: number | null;
+  serial_mode?: 'projected' | 'full';
+  actual_speedup?: number;
   summary: string;
   generated_at: number;
 }
@@ -25,6 +27,11 @@ export interface RenderingJob {
   filter_chain?: string;
   duration?: string;
   projected_serial_time?: string;
+  serial_actual_time?: string;
+  serial_progress?: number;
+  serial_output?: string;
+  parallel_progress?: number;
+  strict_benchmark?: boolean;
   smart_config?: Record<string, unknown>;
   comparison_report?: ComparisonReport | null;
   created_at?: number;

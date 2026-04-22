@@ -2,6 +2,7 @@ import { Sidebar } from './components/dashboard/sidebar';
 import { JobList } from './components/dashboard/job-list';
 import { VideoUpload } from './components/dashboard/video-upload';
 import { RealtimeMonitor } from './components/dashboard/realtime-monitor';
+import { LiveBenchmarkComparison } from './components/dashboard/live-benchmark-comparison';
 import { ChunkVisualizer } from './components/dashboard/chunk-visualizer';
 import { SpeedupComparison } from './components/dashboard/speedup-comparison';
 import { VideoComparison } from './components/dashboard/video-comparison';
@@ -16,6 +17,7 @@ import { apiUrl } from './lib/api';
 
 function App() {
   const [smartMode, setSmartMode] = useState(true);
+  const [strictBenchmark, setStrictBenchmark] = useState(false);
   const [engineVersion, setEngineVersion] = useState<EngineVersion>('v1');
   const [v2Available, setV2Available] = useState(false);
   const [selectedVideoPath, setSelectedVideoPath] = useState<string | null>('test_input.mp4');
@@ -89,6 +91,7 @@ function App() {
           workers: 4,
           filter_chain: 'unsharp=5:5:1.5:5:5:0.5',
           smart: smartMode,
+          strict_benchmark: strictBenchmark,
           engine_version: engineVersion
         })
       });
@@ -204,6 +207,23 @@ function App() {
                 />
               </div>
 
+              <div className="flex items-center gap-3 bg-[#111111] border border-[#222] px-3 py-1.5 rounded-xl">
+                <div className={`p-1 rounded-md ${strictBenchmark ? 'bg-cyan-500/20' : 'bg-zinc-800'}`}>
+                  <Cpu className={`w-3.5 h-3.5 ${strictBenchmark ? 'text-cyan-400' : 'text-zinc-500'}`} />
+                </div>
+                <div className="flex flex-col">
+                  <span className={`text-[10px] font-bold uppercase leading-none ${strictBenchmark ? 'text-cyan-400' : 'text-zinc-500'}`}>
+                    Strict Benchmark
+                  </span>
+                  <span className="text-[9px] text-zinc-600 font-medium">Full serial baseline</span>
+                </div>
+                <Switch
+                  checked={strictBenchmark}
+                  onCheckedChange={setStrictBenchmark}
+                  className="ml-1 scale-75 data-[state=checked]:bg-cyan-500"
+                />
+              </div>
+
               {/* Action Buttons */}
               <div className="flex items-center gap-2">
                 <Button
@@ -252,6 +272,15 @@ function App() {
             {/* Phase Indicator (Only when job is active/recent) */}
             {activeJob && activeJob.status !== 'queued' && (
                 <PhaseIndicator phase={activeJob.phase} />
+            )}
+
+            {activeJob && activeJob.strict_benchmark && activeJob.status === 'processing' && (
+              <LiveBenchmarkComparison
+                thumbnail={thumbnailPreview}
+                serialProgress={activeJob.serial_progress ?? 0}
+                parallelProgress={activeJob.parallel_progress ?? 0}
+                phase={activeJob.phase}
+              />
             )}
 
             {/* Row 2: Interaction Zone */}
