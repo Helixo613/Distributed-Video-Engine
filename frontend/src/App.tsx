@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Toaster } from 'sonner';
 import { DemoControls } from './components/research/demo-controls';
+import { EvidenceDashboard } from './components/research/evidence-dashboard';
 import { ResearchShell } from './components/research/research-shell';
 import { SelectorDecisionPanel } from './components/research/selector-decision-panel';
 import { StoryMode } from './components/research/story-mode';
@@ -43,6 +44,8 @@ function App() {
         />
         <SelectorDecisionPanel scenario={selectedScenario} workerBudget={workerBudget} />
       </div>
+    ) : activeSection === 'evidence' ? (
+      <EvidenceDashboard />
     ) : (
       <section className="rounded-lg border border-zinc-800 bg-zinc-950 p-6">
         <h2 className="text-xl font-semibold capitalize text-white">{activeSection}</h2>
