@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Toaster } from 'sonner';
+import { ArchitectureFlow } from './components/research/architecture-flow';
 import { DemoControls } from './components/research/demo-controls';
 import { EvidenceDashboard } from './components/research/evidence-dashboard';
 import { ResearchShell } from './components/research/research-shell';
@@ -47,10 +48,7 @@ function App() {
     ) : activeSection === 'evidence' ? (
       <EvidenceDashboard />
     ) : (
-      <section className="rounded-lg border border-zinc-800 bg-zinc-950 p-6">
-        <h2 className="text-xl font-semibold capitalize text-white">{activeSection}</h2>
-        <p className="mt-2 text-sm text-zinc-400">This section will be implemented in the next tasks.</p>
-      </section>
+      <ArchitectureFlow />
     );
 
   return (
