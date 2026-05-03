@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Toaster } from 'sonner';
+import { Toaster, toast } from 'sonner';
 import { ArchitectureFlow } from './components/research/architecture-flow';
+import { BenchmarkComparison } from './components/research/benchmark-comparison';
 import { DemoControls } from './components/research/demo-controls';
 import { EvidenceDashboard } from './components/research/evidence-dashboard';
 import { ResearchShell } from './components/research/research-shell';
@@ -15,6 +16,12 @@ function App() {
   const [backendAvailable, setBackendAvailable] = useState(false);
   const [selectedScenarioId, setSelectedScenarioId] = useState(demoScenarios[0].id);
   const [workerBudget, setWorkerBudget] = useState(4);
+  const [uploadedInputPath, setUploadedInputPath] = useState<string | null>(null);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const [uploadStatus, setUploadStatus] = useState<string | null>(null);
+  const [liveStatus, setLiveStatus] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isRunningLive, setIsRunningLive] = useState(false);
 
   useEffect(() => {
     const checkHealth = async () => {
@@ -30,6 +37,86 @@ function App() {
   }, []);
 
   const selectedScenario = demoScenarios.find((scenario) => scenario.id === selectedScenarioId) ?? demoScenarios[0];
+  const liveInputPath = uploadedInputPath ?? selectedScenario.samplePath;
+
+  const handleScenarioChange = (scenarioId: string) => {
+    setSelectedScenarioId(scenarioId);
+    setUploadedInputPath(null);
+    setUploadedFileName(null);
+    setUploadStatus(null);
+    setLiveStatus(null);
+  };
+
+  const handleUpload = async (file: File) => {
+    setIsUploading(true);
+    setUploadStatus(`Uploading ${file.name}...`);
+    setLiveStatus(null);
+
+    try {
+      const form = new FormData();
+      form.append('file', file);
+
+      const res = await fetch(apiUrl('/upload'), {
+        method: 'POST',
+        body: form,
+      });
+
+      if (!res.ok) {
+        const message = await res.text();
+        throw new Error(message || 'Upload failed');
+      }
+
+      const data = (await res.json()) as { filename: string; path: string; size_mb: number };
+      setUploadedInputPath(data.path);
+      setUploadedFileName(data.filename);
+      setUploadStatus(`Uploaded ${data.filename} (${data.size_mb} MB). Ready for live run.`);
+      toast.success('Video uploaded for live demo');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Upload failed';
+      setUploadStatus(message);
+      toast.error(message);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleRunLive = async () => {
+    setIsRunningLive(true);
+    setLiveStatus(`Starting live run for ${liveInputPath}...`);
+
+    try {
+      const res = await fetch(apiUrl('/jobs'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          input_path: liveInputPath,
+          workers: Math.min(selectedScenario.selector.workers, workerBudget),
+          filter_chain: 'unsharp=5:5:1.5:5:5:0.5',
+          smart: true,
+          strict_benchmark: true,
+          engine_version: 'v1',
+          scheduler_enabled: true,
+          partition_policy: selectedScenario.selector.policy,
+          chunk_count: selectedScenario.selector.chunks,
+        }),
+      });
+
+      if (!res.ok) {
+        const message = await res.text();
+        throw new Error(message || 'Failed to start live job');
+      }
+
+      const data = (await res.json()) as { id: string };
+      setLiveStatus(`Live job ${data.id} started. Use the backend job list or logs to monitor processing.`);
+      toast.success(`Live job ${data.id} started`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to start live job';
+      setLiveStatus(message);
+      toast.error(message);
+    } finally {
+      setIsRunningLive(false);
+    }
+  };
 
   const sectionContent =
     activeSection === 'story' ? (
@@ -38,11 +125,20 @@ function App() {
       <div className="grid gap-5">
         <DemoControls
           selectedScenarioId={selectedScenarioId}
-          onScenarioChange={setSelectedScenarioId}
+          onScenarioChange={handleScenarioChange}
           workerBudget={workerBudget}
           onWorkerBudgetChange={setWorkerBudget}
           liveAvailable={backendAvailable}
+          liveInputPath={liveInputPath}
+          uploadedFileName={uploadedFileName}
+          uploadStatus={uploadStatus}
+          liveStatus={liveStatus}
+          isUploading={isUploading}
+          isRunningLive={isRunningLive}
+          onUpload={handleUpload}
+          onRunLive={handleRunLive}
         />
+        <BenchmarkComparison scenario={selectedScenario} />
         <SelectorDecisionPanel scenario={selectedScenario} workerBudget={workerBudget} />
       </div>
     ) : activeSection === 'evidence' ? (

@@ -34,6 +34,8 @@ export interface DemoScenario {
   id: string;
   name: string;
   context: string;
+  samplePath: string;
+  sampleNote: string;
   durationSeconds: number;
   resolution: string;
   contentClass: string;
@@ -55,6 +57,18 @@ export interface DemoScenario {
     overheadSeconds: number;
     rationale: string[];
   };
+  replayComparison: BaselineComparison[];
+}
+
+export interface BaselineComparison {
+  id: 'serial' | 'fixed' | 'adaptive';
+  label: string;
+  runtimeSeconds: number;
+  workers: number;
+  chunks: number;
+  speedup: number;
+  summary: string;
+  highlight?: boolean;
 }
 
 export interface KeyResult {
@@ -124,6 +138,8 @@ export const demoScenarios: DemoScenario[] = [
     id: 'short-light',
     name: 'Short lightweight clip',
     context: 'Overhead-dominated inference normalization',
+    samplePath: 'test_input.mp4',
+    sampleNote: 'Use a short clip or upload one on the demo laptop.',
     durationSeconds: 3,
     resolution: '720p',
     contentClass: 'low motion',
@@ -144,11 +160,43 @@ export const demoScenarios: DemoScenario[] = [
         'The selector conservatively chooses serial execution to avoid wasting workers.',
       ],
     },
+    replayComparison: [
+      {
+        id: 'serial',
+        label: 'Serial',
+        runtimeSeconds: 4.2,
+        workers: 1,
+        chunks: 1,
+        speedup: 1,
+        summary: 'Lowest overhead path for a short lightweight sample.',
+        highlight: true,
+      },
+      {
+        id: 'fixed',
+        label: 'Fixed Parallel',
+        runtimeSeconds: 3.8,
+        workers: 4,
+        chunks: 4,
+        speedup: 1.11,
+        summary: 'Can be marginally faster, but spends a high fraction on orchestration.',
+      },
+      {
+        id: 'adaptive',
+        label: 'Adaptive Selector',
+        runtimeSeconds: 4.2,
+        workers: 1,
+        chunks: 1,
+        speedup: 1,
+        summary: 'Chooses serial because predicted parallel gain does not clear the safety margin.',
+      },
+    ],
   },
   {
     id: 'medium-action',
     name: 'Medium action clip',
     context: 'Vision enhancement before analytics',
+    samplePath: 'uploads/class_demo_medium.mp4',
+    sampleNote: 'Upload or place a 12s motion-heavy clip at this path on the GPU laptop.',
     durationSeconds: 12,
     resolution: '1080p',
     contentClass: 'high motion',
@@ -169,11 +217,43 @@ export const demoScenarios: DemoScenario[] = [
         'Adaptive chunks reduce imbalance from uneven content complexity.',
       ],
     },
+    replayComparison: [
+      {
+        id: 'serial',
+        label: 'Serial',
+        runtimeSeconds: 24.8,
+        workers: 1,
+        chunks: 1,
+        speedup: 1,
+        summary: 'Useful baseline, but leaves parallel work available.',
+      },
+      {
+        id: 'fixed',
+        label: 'Fixed Parallel',
+        runtimeSeconds: 9.8,
+        workers: 4,
+        chunks: 4,
+        speedup: 2.53,
+        summary: 'Strong speedup, but equal chunks can still leave imbalance.',
+      },
+      {
+        id: 'adaptive',
+        label: 'Adaptive Selector',
+        runtimeSeconds: 9.6,
+        workers: 4,
+        chunks: 6,
+        speedup: 2.58,
+        summary: 'Chooses adaptive chunking and matches the best observed path.',
+        highlight: true,
+      },
+    ],
   },
   {
     id: 'long-heavy',
     name: 'Long noisy clip',
     context: 'Robust preprocessing for noisy media',
+    samplePath: 'uploads/class_demo_heavy.mp4',
+    sampleNote: 'Use a longer noisy clip on the GPU laptop for the most visible live run.',
     durationSeconds: 30,
     resolution: '1080p',
     contentClass: 'mixed motion',
@@ -194,6 +274,36 @@ export const demoScenarios: DemoScenario[] = [
         'The selected worker budget gives strong speedup while avoiding excessive diminishing returns.',
       ],
     },
+    replayComparison: [
+      {
+        id: 'serial',
+        label: 'Serial',
+        runtimeSeconds: 86.4,
+        workers: 1,
+        chunks: 1,
+        speedup: 1,
+        summary: 'Clear lower bound for heavy preprocessing.',
+      },
+      {
+        id: 'fixed',
+        label: 'Fixed Parallel',
+        runtimeSeconds: 27.5,
+        workers: 8,
+        chunks: 8,
+        speedup: 3.14,
+        summary: 'Parallelism helps, but fixed chunks do not fully exploit the workload.',
+      },
+      {
+        id: 'adaptive',
+        label: 'Adaptive Selector',
+        runtimeSeconds: 22.7,
+        workers: 8,
+        chunks: 12,
+        speedup: 3.81,
+        summary: 'Chooses more chunks and stronger parallelism after overhead is amortized.',
+        highlight: true,
+      },
+    ],
   },
 ];
 
