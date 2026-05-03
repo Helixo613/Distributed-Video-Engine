@@ -11,6 +11,26 @@ import { demoScenarios } from './research-demo-data';
 import type { ResearchSection } from './research-demo-data';
 import { apiUrl } from './lib/api';
 
+interface LiveJob {
+  id: string;
+  status: string;
+  phase?: string;
+  progress: number;
+  duration?: string | null;
+  serial_actual_time?: string | null;
+  comparison_report?: {
+    actual_speedup?: number;
+    psnr_avg?: number | null;
+    ssim_all?: number | null;
+    summary?: string;
+  } | null;
+  performance?: {
+    throughput?: number | null;
+    efficiency?: number | null;
+  } | null;
+  error?: string | null;
+}
+
 function App() {
   const [activeSection, setActiveSection] = useState<ResearchSection>('story');
   const [backendAvailable, setBackendAvailable] = useState(false);
@@ -20,6 +40,8 @@ function App() {
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
   const [liveStatus, setLiveStatus] = useState<string | null>(null);
+  const [liveJob, setLiveJob] = useState<LiveJob | null>(null);
+  const [liveJobId, setLiveJobId] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isRunningLive, setIsRunningLive] = useState(false);
 
@@ -36,6 +58,42 @@ function App() {
     checkHealth();
   }, []);
 
+  useEffect(() => {
+    if (!liveJobId) return;
+
+    let cancelled = false;
+    const pollJob = async () => {
+      try {
+        const res = await fetch(apiUrl(`/jobs/${liveJobId}`));
+        if (!res.ok) throw new Error('Failed to read live job status');
+        const data = (await res.json()) as LiveJob;
+        if (cancelled) return;
+
+        setLiveJob(data);
+        setLiveStatus(`Live job ${data.id}: ${data.status}${data.phase ? ` (${data.phase})` : ''} - ${data.progress}%`);
+
+        if (data.status === 'completed') {
+          setLiveStatus(`Live job ${data.id} completed. Speedup: ${data.comparison_report?.actual_speedup?.toFixed(2) ?? 'n/a'}x.`);
+          setLiveJobId(null);
+        } else if (data.status === 'failed') {
+          setLiveStatus(`Live job ${data.id} failed: ${data.error ?? 'unknown error'}`);
+          setLiveJobId(null);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setLiveStatus(error instanceof Error ? error.message : 'Failed to poll live job');
+        }
+      }
+    };
+
+    pollJob();
+    const interval = window.setInterval(pollJob, 1000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+    };
+  }, [liveJobId]);
+
   const selectedScenario = demoScenarios.find((scenario) => scenario.id === selectedScenarioId) ?? demoScenarios[0];
   const liveInputPath = uploadedInputPath ?? selectedScenario.samplePath;
 
@@ -45,6 +103,8 @@ function App() {
     setUploadedFileName(null);
     setUploadStatus(null);
     setLiveStatus(null);
+    setLiveJob(null);
+    setLiveJobId(null);
   };
 
   const handleUpload = async (file: File) => {
@@ -107,7 +167,9 @@ function App() {
       }
 
       const data = (await res.json()) as { id: string };
-      setLiveStatus(`Live job ${data.id} started. Use the backend job list or logs to monitor processing.`);
+      setLiveJobId(data.id);
+      setLiveJob({ id: data.id, status: 'queued', phase: 'queued', progress: 0 });
+      setLiveStatus(`Live job ${data.id} started. Polling status...`);
       toast.success(`Live job ${data.id} started`);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to start live job';
@@ -133,6 +195,7 @@ function App() {
           uploadedFileName={uploadedFileName}
           uploadStatus={uploadStatus}
           liveStatus={liveStatus}
+          liveJob={liveJob}
           isUploading={isUploading}
           isRunningLive={isRunningLive}
           onUpload={handleUpload}

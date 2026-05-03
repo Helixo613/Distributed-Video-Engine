@@ -10,6 +10,25 @@ interface DemoControlsProps {
   uploadedFileName: string | null;
   uploadStatus: string | null;
   liveStatus: string | null;
+  liveJob: {
+    id: string;
+    status: string;
+    phase?: string;
+    progress: number;
+    duration?: string | null;
+    serial_actual_time?: string | null;
+    comparison_report?: {
+      actual_speedup?: number;
+      psnr_avg?: number | null;
+      ssim_all?: number | null;
+      summary?: string;
+    } | null;
+    performance?: {
+      throughput?: number | null;
+      efficiency?: number | null;
+    } | null;
+    error?: string | null;
+  } | null;
   isUploading: boolean;
   isRunningLive: boolean;
   onUpload: (file: File) => void;
@@ -26,6 +45,7 @@ export function DemoControls({
   uploadedFileName,
   uploadStatus,
   liveStatus,
+  liveJob,
   isUploading,
   isRunningLive,
   onUpload,
@@ -134,6 +154,59 @@ export function DemoControls({
           {liveStatus && <div>{liveStatus}</div>}
         </div>
       )}
+
+      {liveJob && (
+        <div className="mt-4 rounded-lg border border-cyan-500/30 bg-cyan-500/10 p-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-wide text-cyan-200">Live Result</div>
+              <h3 className="mt-1 text-lg font-semibold text-white">
+                Job {liveJob.id}: {liveJob.status}
+              </h3>
+              <p className="mt-1 text-sm text-cyan-50/80">
+                Phase: {liveJob.phase ?? 'n/a'} · Progress: {liveJob.progress}%
+              </p>
+            </div>
+            <div className="h-2 w-full rounded-full bg-zinc-800 sm:mt-3 sm:w-56">
+              <div
+                className="h-2 rounded-full bg-cyan-300 transition-all"
+                style={{ width: `${Math.max(0, Math.min(100, liveJob.progress))}%` }}
+              />
+            </div>
+          </div>
+
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            <LiveMetric label="Parallel time" value={liveJob.duration ?? 'pending'} />
+            <LiveMetric label="Serial time" value={liveJob.serial_actual_time ?? 'pending'} />
+            <LiveMetric
+              label="Actual speedup"
+              value={liveJob.comparison_report?.actual_speedup ? `${liveJob.comparison_report.actual_speedup.toFixed(2)}x` : 'pending'}
+            />
+            <LiveMetric
+              label="PSNR"
+              value={liveJob.comparison_report?.psnr_avg ? liveJob.comparison_report.psnr_avg.toFixed(2) : 'pending'}
+            />
+            <LiveMetric
+              label="SSIM"
+              value={liveJob.comparison_report?.ssim_all ? liveJob.comparison_report.ssim_all.toFixed(4) : 'pending'}
+            />
+          </div>
+
+          {liveJob.comparison_report?.summary && (
+            <p className="mt-3 text-sm leading-6 text-cyan-50/80">{liveJob.comparison_report.summary}</p>
+          )}
+          {liveJob.error && <p className="mt-3 text-sm leading-6 text-red-200">{liveJob.error}</p>}
+        </div>
+      )}
     </section>
+  );
+}
+
+function LiveMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-md border border-cyan-500/20 bg-zinc-950/60 p-3">
+      <div className="text-[10px] font-semibold uppercase tracking-wide text-cyan-200/70">{label}</div>
+      <div className="mt-1 text-lg font-semibold text-white">{value}</div>
+    </div>
   );
 }
