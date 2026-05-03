@@ -68,11 +68,22 @@ Live Demo is the working demonstration surface.
 
 It should allow the presenter to choose or upload a video, choose workload intensity, set a worker budget, and run or simulate the selector.
 
+The approved demo model is hybrid:
+
+1. **Benchmark Replay Mode** is the primary classroom path. It uses two or three paper-backed sample scenarios and always renders a complete Serial vs Fixed Parallel vs Adaptive Selector comparison without depending on the presentation machine.
+2. **Live Run Mode** is the authenticity layer. On the GPU demo laptop, the presenter can upload a video or run the selected sample path through the existing backend. If the backend is unavailable, live controls are disabled and the replay remains usable.
+
+The UI must label replay data honestly as recorded or presentation data. It should not imply that replayed metrics were just computed live.
+
 Expected UI elements:
 
 - Video/workload selection.
 - Workload presets: light, medium, heavy.
 - Worker budget control.
+- Sample cards for up to three presentation videos.
+- Serial vs Fixed Parallel vs Adaptive comparison columns.
+- Upload control for a live demo file.
+- Live run button that is disabled when the backend is unavailable.
 - Scheduler decision panel.
 - Feature summary: motion, scene cuts, texture, duration, bitrate, workload intensity.
 - Execution plan: serial or parallel, workers, chunks, partition policy.
