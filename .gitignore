@@ -37,6 +37,8 @@ frontend/.vite/
 
 # Temporary debug folders
 Errors in Ui/
+.worktrees/
+.superpowers/
 
 # Experiment temporaries
 experiments/tmp_*
