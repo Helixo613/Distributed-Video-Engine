@@ -47,7 +47,7 @@ def _nvenc_available() -> bool:
                 "-f",
                 "lavfi",
                 "-i",
-                "testsrc2=size=64x64:rate=1",
+                "testsrc2=size=320x240:rate=1",
                 "-frames:v",
                 "1",
                 "-c:v",
