@@ -1,0 +1,11 @@
+{
+  "n": 39,
+  "beneficial_count": 8,
+  "default_safer_count": 31,
+  "rho_mean": 0.193164,
+  "rho_median": 0.179904,
+  "rho_min": 0.074789,
+  "rho_max": 0.352484,
+  "margin_mean": -0.068557,
+  "definition": "rho = T_decide / T_execute; T_decide = T_metadata + T_features + T_scheduler."
+}

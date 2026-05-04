@@ -1,0 +1,627 @@
+{
+  "calibration_report_version": "1.0",
+  "description": "Calibration analysis for the overhead-aware adaptive execution selector applied to media preprocessing pipelines (normalization, enhancement, denoising) in a cloud/AI ingestion context. Prediction errors are (predicted - actual) / actual, so positive = overestimate. All metrics computed from adaptive-scheduled experiment runs where the selector predicted total runtime before execution.",
+  "overall_prediction_accuracy": {
+    "n": 39,
+    "mean_signed_error": 0.474658,
+    "mean_absolute_error": 0.474658,
+    "median_absolute_error": 0.525466,
+    "std_error": 0.155071,
+    "max_absolute_error": 0.641642,
+    "within_5pct": 3,
+    "within_10pct": 3,
+    "within_20pct": 3
+  },
+  "parallel_prediction_accuracy": {
+    "n": 36,
+    "mean_signed_error": 0.514213,
+    "mean_absolute_error": 0.514213,
+    "median_absolute_error": 0.528799,
+    "std_error": 0.072023,
+    "max_absolute_error": 0.641642,
+    "within_5pct": 0,
+    "within_10pct": 0,
+    "within_20pct": 0
+  },
+  "prediction_accuracy_by_workload": {
+    "heavy": {
+      "n": 12,
+      "mean_signed_error": 0.47424,
+      "mean_absolute_error": 0.47424,
+      "median_absolute_error": 0.49038,
+      "std_error": 0.059393,
+      "max_absolute_error": 0.534036,
+      "within_5pct": 0,
+      "within_10pct": 0,
+      "within_20pct": 0
+    },
+    "light": {
+      "n": 15,
+      "mean_signed_error": 0.406737,
+      "mean_absolute_error": 0.406737,
+      "median_absolute_error": 0.526223,
+      "std_error": 0.218145,
+      "max_absolute_error": 0.558698,
+      "within_5pct": 3,
+      "within_10pct": 3,
+      "within_20pct": 3
+    },
+    "medium": {
+      "n": 12,
+      "mean_signed_error": 0.559977,
+      "mean_absolute_error": 0.559977,
+      "median_absolute_error": 0.579502,
+      "std_error": 0.068892,
+      "max_absolute_error": 0.641642,
+      "within_5pct": 0,
+      "within_10pct": 0,
+      "within_20pct": 0
+    }
+  },
+  "prediction_accuracy_by_duration": {
+    "12s": {
+      "n": 18,
+      "mean_signed_error": 0.465345,
+      "mean_absolute_error": 0.465345,
+      "median_absolute_error": 0.452703,
+      "std_error": 0.06287,
+      "max_absolute_error": 0.560463,
+      "within_5pct": 0,
+      "within_10pct": 0,
+      "within_20pct": 0
+    },
+    "30s": {
+      "n": 18,
+      "mean_signed_error": 0.563081,
+      "mean_absolute_error": 0.563081,
+      "median_absolute_error": 0.552676,
+      "std_error": 0.040868,
+      "max_absolute_error": 0.641642,
+      "within_5pct": 0,
+      "within_10pct": 0,
+      "within_20pct": 0
+    },
+    "3s": {
+      "n": 3,
+      "mean_signed_error": 0.0,
+      "mean_absolute_error": 0.0,
+      "median_absolute_error": 0.0,
+      "std_error": 0.0,
+      "max_absolute_error": 0.0,
+      "within_5pct": 3,
+      "within_10pct": 3,
+      "within_20pct": 3
+    }
+  },
+  "prediction_accuracy_by_content_class": {
+    "medium-to-high-motion": {
+      "n": 9,
+      "mean_signed_error": 0.555963,
+      "mean_absolute_error": 0.555963,
+      "median_absolute_error": 0.544426,
+      "std_error": 0.038773,
+      "max_absolute_error": 0.610197,
+      "within_5pct": 0,
+      "within_10pct": 0,
+      "within_20pct": 0
+    },
+    "scene-cut-heavy": {
+      "n": 9,
+      "mean_signed_error": 0.512524,
+      "mean_absolute_error": 0.512524,
+      "median_absolute_error": 0.533894,
+      "std_error": 0.046012,
+      "max_absolute_error": 0.560463,
+      "within_5pct": 0,
+      "within_10pct": 0,
+      "within_20pct": 0
+    },
+    "static-low-motion": {
+      "n": 21,
+      "mean_signed_error": 0.423585,
+      "mean_absolute_error": 0.423585,
+      "median_absolute_error": 0.454688,
+      "std_error": 0.194633,
+      "max_absolute_error": 0.641642,
+      "within_5pct": 3,
+      "within_10pct": 3,
+      "within_20pct": 3
+    }
+  },
+  "measured_overhead_contributions": {
+    "probe": {
+      "mean": 0.0701,
+      "std": 0.004036,
+      "min": 0.064706,
+      "max": 0.080744
+    },
+    "feature": {
+      "mean": 0.446117,
+      "std": 0.149314,
+      "min": 0.210222,
+      "max": 0.695934
+    },
+    "partition": {
+      "mean": 1.3e-05,
+      "std": 1.8e-05,
+      "min": 2e-06,
+      "max": 0.00012
+    },
+    "dispatch": {
+      "mean": 0.002624,
+      "std": 0.001551,
+      "min": 0.0,
+      "max": 0.005068
+    },
+    "merge": {
+      "mean": 0.186562,
+      "std": 0.071407,
+      "min": 0.0,
+      "max": 0.289655
+    },
+    "serial_sampling": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0
+    },
+    "scheduler": {
+      "mean": 0.002194,
+      "std": 0.001662,
+      "min": 0.000146,
+      "max": 0.006724
+    },
+    "quality_evaluation": {
+      "mean": 2.44699,
+      "std": 0.601721,
+      "min": 1.251437,
+      "max": 3.447249
+    }
+  },
+  "predicted_overhead_terms": {
+    "probe": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0
+    },
+    "feature": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0
+    },
+    "partition": {
+      "mean": 9e-06,
+      "std": 4e-06,
+      "min": 0.0,
+      "max": 2e-05
+    },
+    "dispatch": {
+      "mean": 0.004615,
+      "std": 0.00135,
+      "min": 0.0,
+      "max": 0.005
+    },
+    "merge": {
+      "mean": 0.160615,
+      "std": 0.06227,
+      "min": 0.0,
+      "max": 0.216
+    },
+    "overhead": {
+      "mean": 0.101538,
+      "std": 0.048965,
+      "min": 0.0,
+      "max": 0.15
+    }
+  },
+  "orchestration_overhead_fraction": {
+    "mean_overhead_fraction": 0.24996,
+    "median_overhead_fraction": 0.23675,
+    "max_overhead_fraction": 0.432277
+  },
+  "selector_decision_distribution": {
+    "by_regime": {
+      "parallel": 36,
+      "serial": 3
+    },
+    "by_label": {
+      "static-equal": 23,
+      "adaptive-searched": 13,
+      "serial": 3
+    }
+  },
+  "predicted_vs_actual": [
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_clipchamp_720p_12s.mp4",
+      "workload_class": "light",
+      "content_class": "static-low-motion",
+      "duration_label": "12s",
+      "predicted": 0.932278,
+      "actual": 1.648335,
+      "relative_error": 0.434412,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_clipchamp_720p_12s.mp4",
+      "workload_class": "light",
+      "content_class": "static-low-motion",
+      "duration_label": "12s",
+      "predicted": 0.823388,
+      "actual": 1.338742,
+      "relative_error": 0.384954,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_clipchamp_720p_12s.mp4",
+      "workload_class": "light",
+      "content_class": "static-low-motion",
+      "duration_label": "12s",
+      "predicted": 0.794328,
+      "actual": 1.312226,
+      "relative_error": 0.394671,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_clipchamp_720p_12s.mp4",
+      "workload_class": "medium",
+      "content_class": "static-low-motion",
+      "duration_label": "12s",
+      "predicted": 1.057026,
+      "actual": 1.938387,
+      "relative_error": 0.454688,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_clipchamp_720p_12s.mp4",
+      "workload_class": "medium",
+      "content_class": "static-low-motion",
+      "duration_label": "12s",
+      "predicted": 1.062159,
+      "actual": 1.978118,
+      "relative_error": 0.463046,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_clipchamp_720p_12s.mp4",
+      "workload_class": "medium",
+      "content_class": "static-low-motion",
+      "duration_label": "12s",
+      "predicted": 0.985488,
+      "actual": 1.794137,
+      "relative_error": 0.450718,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_clipchamp_720p_12s.mp4",
+      "workload_class": "heavy",
+      "content_class": "static-low-motion",
+      "duration_label": "12s",
+      "predicted": 1.733323,
+      "actual": 2.770383,
+      "relative_error": 0.374338,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_clipchamp_720p_12s.mp4",
+      "workload_class": "heavy",
+      "content_class": "static-low-motion",
+      "duration_label": "12s",
+      "predicted": 1.738743,
+      "actual": 3.05456,
+      "relative_error": 0.430772,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_clipchamp_720p_12s.mp4",
+      "workload_class": "heavy",
+      "content_class": "static-low-motion",
+      "duration_label": "12s",
+      "predicted": 1.74699,
+      "actual": 2.799207,
+      "relative_error": 0.375898,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_test_input_720p_30s.mp4",
+      "workload_class": "light",
+      "content_class": "medium-to-high-motion",
+      "duration_label": "30s",
+      "predicted": 0.982306,
+      "actual": 2.221291,
+      "relative_error": 0.557777,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_test_input_720p_30s.mp4",
+      "workload_class": "light",
+      "content_class": "medium-to-high-motion",
+      "duration_label": "30s",
+      "predicted": 0.989076,
+      "actual": 2.087641,
+      "relative_error": 0.526223,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_test_input_720p_30s.mp4",
+      "workload_class": "light",
+      "content_class": "medium-to-high-motion",
+      "duration_label": "30s",
+      "predicted": 0.962345,
+      "actual": 2.112378,
+      "relative_error": 0.544426,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_test_input_720p_30s.mp4",
+      "workload_class": "medium",
+      "content_class": "medium-to-high-motion",
+      "duration_label": "30s",
+      "predicted": 1.425365,
+      "actual": 3.656626,
+      "relative_error": 0.610197,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_test_input_720p_30s.mp4",
+      "workload_class": "medium",
+      "content_class": "medium-to-high-motion",
+      "duration_label": "30s",
+      "predicted": 1.414836,
+      "actual": 3.584999,
+      "relative_error": 0.605345,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_test_input_720p_30s.mp4",
+      "workload_class": "medium",
+      "content_class": "medium-to-high-motion",
+      "duration_label": "30s",
+      "predicted": 1.45737,
+      "actual": 3.630181,
+      "relative_error": 0.598541,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_test_input_720p_30s.mp4",
+      "workload_class": "heavy",
+      "content_class": "medium-to-high-motion",
+      "duration_label": "30s",
+      "predicted": 2.747737,
+      "actual": 5.691782,
+      "relative_error": 0.517245,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_test_input_720p_30s.mp4",
+      "workload_class": "heavy",
+      "content_class": "medium-to-high-motion",
+      "duration_label": "30s",
+      "predicted": 2.757189,
+      "actual": 5.7584,
+      "relative_error": 0.521188,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_test_input_720p_30s.mp4",
+      "workload_class": "heavy",
+      "content_class": "medium-to-high-motion",
+      "duration_label": "30s",
+      "predicted": 2.744495,
+      "actual": 5.750343,
+      "relative_error": 0.522725,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_phone_1080p_12s.mp4",
+      "workload_class": "light",
+      "content_class": "scene-cut-heavy",
+      "duration_label": "12s",
+      "predicted": 0.751675,
+      "actual": 1.584029,
+      "relative_error": 0.525466,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_phone_1080p_12s.mp4",
+      "workload_class": "light",
+      "content_class": "scene-cut-heavy",
+      "duration_label": "12s",
+      "predicted": 0.73096,
+      "actual": 1.568227,
+      "relative_error": 0.533894,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_phone_1080p_12s.mp4",
+      "workload_class": "light",
+      "content_class": "scene-cut-heavy",
+      "duration_label": "12s",
+      "predicted": 0.727926,
+      "actual": 1.566064,
+      "relative_error": 0.535187,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_phone_1080p_12s.mp4",
+      "workload_class": "medium",
+      "content_class": "scene-cut-heavy",
+      "duration_label": "12s",
+      "predicted": 1.187121,
+      "actual": 2.625188,
+      "relative_error": 0.547796,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_phone_1080p_12s.mp4",
+      "workload_class": "medium",
+      "content_class": "scene-cut-heavy",
+      "duration_label": "12s",
+      "predicted": 1.1664,
+      "actual": 2.653703,
+      "relative_error": 0.560463,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_phone_1080p_12s.mp4",
+      "workload_class": "medium",
+      "content_class": "scene-cut-heavy",
+      "duration_label": "12s",
+      "predicted": 1.177487,
+      "actual": 2.621511,
+      "relative_error": 0.550836,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_phone_1080p_12s.mp4",
+      "workload_class": "heavy",
+      "content_class": "scene-cut-heavy",
+      "duration_label": "12s",
+      "predicted": 2.3842,
+      "actual": 4.306978,
+      "relative_error": 0.446433,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_phone_1080p_12s.mp4",
+      "workload_class": "heavy",
+      "content_class": "scene-cut-heavy",
+      "duration_label": "12s",
+      "predicted": 2.390283,
+      "actual": 4.339093,
+      "relative_error": 0.449129,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_phone_1080p_12s.mp4",
+      "workload_class": "heavy",
+      "content_class": "scene-cut-heavy",
+      "duration_label": "12s",
+      "predicted": 2.452972,
+      "actual": 4.572297,
+      "relative_error": 0.463514,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_clipchamp_1080p_30s.mp4",
+      "workload_class": "light",
+      "content_class": "static-low-motion",
+      "duration_label": "30s",
+      "predicted": 1.274362,
+      "actual": 2.887735,
+      "relative_error": 0.558698,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_clipchamp_1080p_30s.mp4",
+      "workload_class": "light",
+      "content_class": "static-low-motion",
+      "duration_label": "30s",
+      "predicted": 1.244678,
+      "actual": 2.806261,
+      "relative_error": 0.556464,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_clipchamp_1080p_30s.mp4",
+      "workload_class": "light",
+      "content_class": "static-low-motion",
+      "duration_label": "30s",
+      "predicted": 1.237555,
+      "actual": 2.743344,
+      "relative_error": 0.548888,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_clipchamp_1080p_30s.mp4",
+      "workload_class": "medium",
+      "content_class": "static-low-motion",
+      "duration_label": "30s",
+      "predicted": 2.115875,
+      "actual": 5.904354,
+      "relative_error": 0.641642,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_clipchamp_1080p_30s.mp4",
+      "workload_class": "medium",
+      "content_class": "static-low-motion",
+      "duration_label": "30s",
+      "predicted": 2.206412,
+      "actual": 5.719255,
+      "relative_error": 0.614213,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_clipchamp_1080p_30s.mp4",
+      "workload_class": "medium",
+      "content_class": "static-low-motion",
+      "duration_label": "30s",
+      "predicted": 2.141161,
+      "actual": 5.668117,
+      "relative_error": 0.622245,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_clipchamp_1080p_30s.mp4",
+      "workload_class": "heavy",
+      "content_class": "static-low-motion",
+      "duration_label": "30s",
+      "predicted": 4.634264,
+      "actual": 9.740407,
+      "relative_error": 0.524223,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_clipchamp_1080p_30s.mp4",
+      "workload_class": "heavy",
+      "content_class": "static-low-motion",
+      "duration_label": "30s",
+      "predicted": 4.666135,
+      "actual": 9.957087,
+      "relative_error": 0.531375,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_clipchamp_1080p_30s.mp4",
+      "workload_class": "heavy",
+      "content_class": "static-low-motion",
+      "duration_label": "30s",
+      "predicted": 4.658781,
+      "actual": 9.998148,
+      "relative_error": 0.534036,
+      "selected_regime": "parallel"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_clipchamp_720p_3s.mp4",
+      "workload_class": "light",
+      "content_class": "static-low-motion",
+      "duration_label": "3s",
+      "predicted": 0.808951,
+      "actual": 0.808951,
+      "relative_error": 0.0,
+      "selected_regime": "serial"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_clipchamp_720p_3s.mp4",
+      "workload_class": "light",
+      "content_class": "static-low-motion",
+      "duration_label": "3s",
+      "predicted": 0.800573,
+      "actual": 0.800573,
+      "relative_error": 0.0,
+      "selected_regime": "serial"
+    },
+    {
+      "input_file": "experiments/benchmark_suite/inputs/real_clipchamp_720p_3s.mp4",
+      "workload_class": "light",
+      "content_class": "static-low-motion",
+      "duration_label": "3s",
+      "predicted": 0.815752,
+      "actual": 0.815752,
+      "relative_error": 0.0,
+      "selected_regime": "serial"
+    }
+  ]
+}

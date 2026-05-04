@@ -1,0 +1,66 @@
+{
+  "schema_version": "research-prototype.v3",
+  "created_at": 1777927125.11033,
+  "videos": [
+    "experiments/benchmark_suite/inputs/real_clipchamp_720p_12s.mp4",
+    "experiments/benchmark_suite/inputs/real_test_input_720p_30s.mp4",
+    "experiments/benchmark_suite/inputs/real_phone_1080p_12s.mp4",
+    "experiments/benchmark_suite/inputs/real_clipchamp_1080p_30s.mp4"
+  ],
+  "workloads": [
+    "light",
+    "medium",
+    "heavy"
+  ],
+  "baselines": [
+    "serial",
+    "static-equal",
+    "adaptive-scheduled"
+  ],
+  "worker_candidates": [
+    1,
+    2,
+    4,
+    6,
+    8,
+    12,
+    16
+  ],
+  "chunk_multipliers": [
+    1.0,
+    1.5,
+    2.0
+  ],
+  "filters": {
+    "light": "eq=contrast=1.02:brightness=0.01:saturation=1.03",
+    "medium": "unsharp=5:5:1.5:5:5:0.5",
+    "heavy": "hqdn3d=1.5:1.5:6:6,gblur=sigma=1.2,unsharp=7:7:1.8:7:7:0.8"
+  },
+  "trials": 3,
+  "fixed_workers": 4,
+  "fixed_chunks": 4,
+  "measured_serial_reference": true,
+  "benchmark_manifest": "experiments/benchmark_suite/benchmark_manifest.json",
+  "model": null,
+  "execution_backend": {
+    "requested": "auto",
+    "resolved": "cuda",
+    "nvenc_available": true
+  },
+  "timing_policy": "speedup computed from compute_time (dispatch+processing+merge), symmetric across serial and parallel",
+  "preprocessing_pipelines": {
+    "light": {
+      "pipeline_label": "inference-normalization",
+      "description": "Lightweight color/brightness normalization typical of media ingestion pipelines that prepare video for downstream ML inference (e.g., object detection, scene classification). Minimal per-frame cost; overhead-dominated."
+    },
+    "medium": {
+      "pipeline_label": "vision-enhancement",
+      "description": "Sharpening and detail-enhancement preprocessing for vision analytics pipelines (e.g., feature extraction, action recognition). Moderate per-frame cost with meaningful compute-to-overhead ratio."
+    },
+    "heavy": {
+      "pipeline_label": "robust-preprocessing",
+      "description": "Multi-stage denoise + blur + sharpen chain representative of robust preprocessing for noisy or low-quality media before AI model ingestion (e.g., surveillance analytics, medical video preprocessing, multimodal embedding pipelines). High per-frame cost; compute-dominated."
+    }
+  },
+  "framing": "Workloads represent media preprocessing pipelines at varying compute intensity, typical of cloud-based AI ingestion systems that normalize, enhance, or denoise video before downstream ML inference. The execution selector optimizes resource allocation (serial vs. parallel, worker count, chunk strategy) based on an overhead-aware cost model calibrated to the preprocessing workload and input content."
+}

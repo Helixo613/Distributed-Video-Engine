@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="560" viewBox="0 0 920 560">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="82" y="28" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#111827">Decision cost ratio across adaptive runs</text>
+<line x1="82" y1="478" x2="886" y2="478" stroke="#111827" stroke-width="1.4"/>
+<line x1="82" y1="42" x2="82" y2="478" stroke="#111827" stroke-width="1.4"/>
+<line x1="82.00" y1="42" x2="82.00" y2="478" stroke="#e5e7eb" stroke-width="1"/>
+<text x="82.00" y="502" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#374151">0.0s</text>
+<line x1="242.80" y1="42" x2="242.80" y2="478" stroke="#e5e7eb" stroke-width="1"/>
+<text x="242.80" y="502" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#374151">2.2s</text>
+<line x1="403.60" y1="42" x2="403.60" y2="478" stroke="#e5e7eb" stroke-width="1"/>
+<text x="403.60" y="502" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#374151">4.3s</text>
+<line x1="564.40" y1="42" x2="564.40" y2="478" stroke="#e5e7eb" stroke-width="1"/>
+<text x="564.40" y="502" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#374151">6.5s</text>
+<line x1="725.20" y1="42" x2="725.20" y2="478" stroke="#e5e7eb" stroke-width="1"/>
+<text x="725.20" y="502" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#374151">8.7s</text>
+<line x1="886.00" y1="42" x2="886.00" y2="478" stroke="#e5e7eb" stroke-width="1"/>
+<text x="886.00" y="502" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#374151">10.8s</text>
+<line x1="82" y1="478.00" x2="886" y2="478.00" stroke="#e5e7eb" stroke-width="1"/>
+<text x="70" y="482.00" text-anchor="end" font-family="Arial, sans-serif" font-size="12" fill="#374151">0.000</text>
+<line x1="82" y1="390.80" x2="886" y2="390.80" stroke="#e5e7eb" stroke-width="1"/>
+<text x="70" y="394.80" text-anchor="end" font-family="Arial, sans-serif" font-size="12" fill="#374151">0.081</text>
+<line x1="82" y1="303.60" x2="886" y2="303.60" stroke="#e5e7eb" stroke-width="1"/>
+<text x="70" y="307.60" text-anchor="end" font-family="Arial, sans-serif" font-size="12" fill="#374151">0.162</text>
+<line x1="82" y1="216.40" x2="886" y2="216.40" stroke="#e5e7eb" stroke-width="1"/>
+<text x="70" y="220.40" text-anchor="end" font-family="Arial, sans-serif" font-size="12" fill="#374151">0.243</text>
+<line x1="82" y1="129.20" x2="886" y2="129.20" stroke="#e5e7eb" stroke-width="1"/>
+<text x="70" y="133.20" text-anchor="end" font-family="Arial, sans-serif" font-size="12" fill="#374151">0.324</text>
+<line x1="82" y1="42.00" x2="886" y2="42.00" stroke="#e5e7eb" stroke-width="1"/>
+<text x="70" y="46.00" text-anchor="end" font-family="Arial, sans-serif" font-size="12" fill="#374151">0.405</text>
+<circle cx="799.71" cy="397.31" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_clipchamp_1080p_30s heavy trial 1: rho=0.0750</title></circle>
+<circle cx="806.94" cy="397.56" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_clipchamp_1080p_30s heavy trial 2: rho=0.0748</title></circle>
+<circle cx="826.44" cy="394.78" r="5.5" fill="#047857" fill-opacity="0.82"><title>real_clipchamp_1080p_30s heavy trial 3: rho=0.0774</title></circle>
+<circle cx="264.51" cy="187.00" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_clipchamp_1080p_30s light trial 1: rho=0.2705</title></circle>
+<circle cx="255.27" cy="191.09" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_clipchamp_1080p_30s light trial 2: rho=0.2667</title></circle>
+<circle cx="255.33" cy="189.53" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_clipchamp_1080p_30s light trial 3: rho=0.2682</title></circle>
+<circle cx="471.35" cy="345.42" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_clipchamp_1080p_30s medium trial 1: rho=0.1233</title></circle>
+<circle cx="477.63" cy="339.53" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_clipchamp_1080p_30s medium trial 2: rho=0.1287</title></circle>
+<circle cx="471.92" cy="338.24" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_clipchamp_1080p_30s medium trial 3: rho=0.1299</title></circle>
+<circle cx="291.28" cy="342.24" r="5.5" fill="#047857" fill-opacity="0.82"><title>real_clipchamp_720p_12s heavy trial 1: rho=0.1262</title></circle>
+<circle cx="325.30" cy="346.47" r="5.5" fill="#047857" fill-opacity="0.82"><title>real_clipchamp_720p_12s heavy trial 2: rho=0.1223</title></circle>
+<circle cx="291.68" cy="342.58" r="5.5" fill="#047857" fill-opacity="0.82"><title>real_clipchamp_720p_12s heavy trial 3: rho=0.1259</title></circle>
+<circle cx="175.53" cy="235.47" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_clipchamp_720p_12s light trial 1: rho=0.2255</title></circle>
+<circle cx="169.46" cy="194.82" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_clipchamp_720p_12s light trial 2: rho=0.2633</title></circle>
+<circle cx="179.42" cy="139.88" r="5.5" fill="#047857" fill-opacity="0.82"><title>real_clipchamp_720p_12s light trial 3: rho=0.3144</title></circle>
+<circle cx="220.74" cy="268.71" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_clipchamp_720p_12s medium trial 1: rho=0.1946</title></circle>
+<circle cx="217.16" cy="285.64" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_clipchamp_720p_12s medium trial 2: rho=0.1788</title></circle>
+<circle cx="215.36" cy="269.49" r="5.5" fill="#047857" fill-opacity="0.82"><title>real_clipchamp_720p_12s medium trial 3: rho=0.1939</title></circle>
+<circle cx="142.00" cy="107.84" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_clipchamp_720p_3s light trial 1: rho=0.3441</title></circle>
+<circle cx="141.38" cy="103.01" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_clipchamp_720p_3s light trial 2: rho=0.3486</title></circle>
+<circle cx="142.51" cy="98.87" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_clipchamp_720p_3s light trial 3: rho=0.3525</title></circle>
+<circle cx="398.12" cy="359.40" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_phone_1080p_12s heavy trial 1: rho=0.1103</title></circle>
+<circle cx="405.70" cy="358.93" r="5.5" fill="#047857" fill-opacity="0.82"><title>real_phone_1080p_12s heavy trial 2: rho=0.1107</title></circle>
+<circle cx="404.50" cy="357.50" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_phone_1080p_12s heavy trial 3: rho=0.1120</title></circle>
+<circle cx="191.93" cy="154.30" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_phone_1080p_12s light trial 1: rho=0.3009</title></circle>
+<circle cx="187.75" cy="151.81" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_phone_1080p_12s light trial 2: rho=0.3033</title></circle>
+<circle cx="187.14" cy="145.10" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_phone_1080p_12s light trial 3: rho=0.3095</title></circle>
+<circle cx="277.36" cy="279.27" r="5.5" fill="#047857" fill-opacity="0.82"><title>real_phone_1080p_12s medium trial 1: rho=0.1848</title></circle>
+<circle cx="275.63" cy="284.50" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_phone_1080p_12s medium trial 2: rho=0.1799</title></circle>
+<circle cx="276.01" cy="281.57" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_phone_1080p_12s medium trial 3: rho=0.1826</title></circle>
+<circle cx="495.58" cy="371.87" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_test_input_720p_30s heavy trial 1: rho=0.0987</title></circle>
+<circle cx="497.88" cy="374.02" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_test_input_720p_30s heavy trial 2: rho=0.0967</title></circle>
+<circle cx="489.62" cy="372.00" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_test_input_720p_30s heavy trial 3: rho=0.0985</title></circle>
+<circle cx="215.61" cy="203.65" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_test_input_720p_30s light trial 1: rho=0.2551</title></circle>
+<circle cx="215.02" cy="197.16" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_test_input_720p_30s light trial 2: rho=0.2611</title></circle>
+<circle cx="214.66" cy="192.39" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_test_input_720p_30s light trial 3: rho=0.2655</title></circle>
+<circle cx="314.74" cy="319.96" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_test_input_720p_30s medium trial 1: rho=0.1469</title></circle>
+<circle cx="325.81" cy="310.78" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_test_input_720p_30s medium trial 2: rho=0.1555</title></circle>
+<circle cx="329.08" cy="309.43" r="5.5" fill="#b91c1c" fill-opacity="0.82"><title>real_test_input_720p_30s medium trial 3: rho=0.1567</title></circle>
+<text x="484.0" y="532" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#111827">Best non-adaptive default runtime</text>
+<text x="22" y="260.0" transform="rotate(-90 22 260.0)" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#111827">rho = T_decide / T_execute</text>
+<circle cx="670" cy="28" r="5.5" fill="#047857" fill-opacity="0.82"/><text x="682" y="32" font-family="Arial, sans-serif" font-size="12" fill="#111827">adaptive faster than default</text>
+<circle cx="670" cy="48" r="5.5" fill="#b91c1c" fill-opacity="0.82"/><text x="682" y="52" font-family="Arial, sans-serif" font-size="12" fill="#111827">default safer</text>
+</svg>
