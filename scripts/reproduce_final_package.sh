@@ -71,6 +71,10 @@ PYTHONPATH=src python3 -m budget_analysis \
   --output-json "$OUTPUT_DIR/budget_analysis.json" \
   --output-csv "$OUTPUT_DIR/budget_analysis.csv"
 
+PYTHONPATH=src python3 -m decision_cost_analysis \
+  "$OUTPUT_DIR/runs.csv" \
+  --output-dir "$OUTPUT_DIR/paper_assets"
+
 # Stage 5: Clean up temp dirs and output videos
 echo "[5/5] Cleaning up..."
 rm -rf "$OUTPUT_DIR"/tmp_run_* "$OUTPUT_DIR"/tmp_profile_* "$OUTPUT_DIR"/*.mp4
