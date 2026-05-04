@@ -21,7 +21,7 @@ from pathlib import Path
 
 from cost_estimator import LinearCostEstimator
 from feature_extractor import extract_video_features
-from ffmpeg_utils import analyze_video, benchmark_serial_profile
+from ffmpeg_utils import analyze_video, benchmark_serial_profile, resolve_execution_backend
 from scheduler import search_best_configuration
 
 
@@ -95,7 +95,9 @@ def main() -> None:
     parser.add_argument("--workers", default="1,2,4,6,8,12,16", help="Full worker candidate list")
     parser.add_argument("--chunk-multipliers", default="1.0,1.5,2.0", help="Chunk multipliers")
     parser.add_argument("--workloads", default="light,medium,heavy", help="Workload classes to analyze")
+    parser.add_argument("--execution-backend", default="auto", help="FFmpeg backend for profiling: auto, cpu, or cuda")
     args = parser.parse_args()
+    resolved_backend = resolve_execution_backend(args.execution_backend)
 
     budgets_int = [int(b.strip()) for b in args.budgets.split(",")]
     worker_budgets: list[int | None] = budgets_int + [None]  # None = unconstrained
@@ -148,6 +150,7 @@ def main() -> None:
                 duration=metadata.duration,
                 sample_seconds=profile_sample_seconds,
                 sample_fractions=[0.0, 0.25, 0.5, 0.75, 0.95],
+                execution_backend=resolved_backend,
             )
             if rate_prof["sample_seconds"] > 0 and rate_prof["positions"] and rate_prof["samples"]:
                 rate_profile = [

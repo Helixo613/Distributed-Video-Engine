@@ -8,7 +8,7 @@ import time
 from pathlib import Path
 
 from cost_estimator import LinearCostEstimator
-from ffmpeg_utils import analyze_video, benchmark_serial_profile
+from ffmpeg_utils import analyze_video, benchmark_serial_profile, execution_backend_info, resolve_execution_backend
 from metrics_logger import MetricsLogger
 from pipeline import run_processing_pipeline
 
@@ -156,7 +156,15 @@ def main() -> None:
     parser.add_argument("--enable-vmaf", action="store_true", help="Attempt VMAF calculation if FFmpeg supports it")
     parser.add_argument("--enable-encode-proxy", action="store_true", help="Enable sampled low-resolution encode-time proxy")
     parser.add_argument("--model", help="Optional linear model JSON for ML-adaptive partitioning")
+    parser.add_argument(
+        "--execution-backend",
+        default="auto",
+        choices=["auto", "cpu", "cuda", "gpu", "nvenc"],
+        help="FFmpeg execution backend. auto uses NVENC when available, otherwise CPU.",
+    )
     args = parser.parse_args()
+    resolved_backend = resolve_execution_backend(args.execution_backend)
+    backend_info = execution_backend_info(args.execution_backend)
 
     output_dir = Path(args.output_dir)
     _reset_output_dir(output_dir)
@@ -194,6 +202,7 @@ def main() -> None:
         "measured_serial_reference": True,
         "benchmark_manifest": args.benchmark_manifest,
         "model": args.model,
+        "execution_backend": backend_info,
         "timing_policy": "speedup computed from compute_time (dispatch+processing+merge), symmetric across serial and parallel",
         "preprocessing_pipelines": {
             name: WORKLOAD_PIPELINE_DESCRIPTIONS[name]
@@ -232,6 +241,7 @@ def main() -> None:
                     enable_vmaf=args.enable_vmaf,
                     estimator=None,
                     temp_dir=str(output_dir / f"tmp_run_serial_{workload_name}_{trial}_{video_stem}"),
+                    execution_backend=resolved_backend,
                 )
                 serial_reference_time = serial_record["runtime"]["serial_baseline_time"]
                 serial_reference_e2e_time = serial_record["runtime"]["e2e_time"]
@@ -257,6 +267,7 @@ def main() -> None:
                         duration=video_meta.duration,
                         sample_seconds=profile_sample_seconds,
                         sample_fractions=[0.0, 0.25, 0.5, 0.75, 0.95],
+                        execution_backend=resolved_backend,
                     )
                     if rate_prof["sample_seconds"] > 0 and rate_prof["positions"] and rate_prof["samples"]:
                         rate_profile = [
@@ -308,6 +319,7 @@ def main() -> None:
                         serial_reference_output_path=serial_reference_output,
                         reuse_serial_reference_on_fallback=True,
                         rate_profile=rate_profile if preset["scheduler_enabled"] else None,
+                        execution_backend=resolved_backend,
                     )
                     record = _attach_experiment_fields(
                         record,

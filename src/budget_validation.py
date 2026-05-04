@@ -12,7 +12,7 @@ import time
 from pathlib import Path
 
 from experiment_runner import WORKLOAD_PRESETS, WORKLOAD_PIPELINE_DESCRIPTIONS
-from ffmpeg_utils import analyze_video, benchmark_serial_profile
+from ffmpeg_utils import analyze_video, benchmark_serial_profile, resolve_execution_backend
 from pipeline import run_processing_pipeline
 
 
@@ -39,6 +39,7 @@ TRIALS = 3
 
 
 def main() -> None:
+    resolved_backend = resolve_execution_backend()
     output_dir = Path("experiments/budget_validation")
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -65,6 +66,7 @@ def main() -> None:
                 chunk_count=1,
                 scheduler_enabled=False,
                 temp_dir=str(output_dir / f"tmp_serial_{video_stem}_{wl_name}_{trial}"),
+                execution_backend=resolved_backend,
             )
             serial_times.append(serial_record["runtime"]["actual_total_time"])
         serial_mean = sum(serial_times) / len(serial_times)
@@ -81,6 +83,7 @@ def main() -> None:
             duration=metadata.duration,
             sample_seconds=min(1.0, metadata.duration),
             sample_fractions=[0.0, 0.25, 0.5, 0.75, 0.95],
+            execution_backend=resolved_backend,
         )
         rate_profile = None
         if rate_prof["sample_seconds"] > 0 and rate_prof["positions"] and rate_prof["samples"]:
@@ -113,6 +116,7 @@ def main() -> None:
                     rate_profile=rate_profile,
                     max_workers=budget,
                     temp_dir=str(output_dir / f"tmp_budget_{budget or 'unc'}_{video_stem}_{wl_name}_{trial}"),
+                    execution_backend=resolved_backend,
                 )
                 measured_times.append(record["runtime"]["actual_total_time"])
                 if selected_info is None:

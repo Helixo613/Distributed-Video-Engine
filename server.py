@@ -24,6 +24,7 @@ from adaptive_partitioner import build_partition_plan
 from evaluator import evaluate_output
 from feature_extractor import extract_video_features
 from ffmpeg_utils import analyze_video, benchmark_serial_sample, ensure_dir
+from ffmpeg_utils import execution_backend_info, resolve_execution_backend
 from metrics_logger import MetricsLogger
 from pipeline import execute_partition_plan, write_record
 from render_engine import get_smart_config
@@ -92,6 +93,7 @@ class JobCreate(BaseModel):
     scheduler_chunk_multipliers: Optional[List[float]] = None
     enable_encode_proxy: Optional[bool] = False
     enable_vmaf: Optional[bool] = False
+    execution_backend: Optional[str] = "auto"
 
 
 class JobStatus(BaseModel):
@@ -130,6 +132,7 @@ class JobStatus(BaseModel):
     scheduler_enabled: Optional[bool] = None
     experiment_record_path: Optional[str] = None
     quality_metrics: Optional[Dict[str, Any]] = None
+    execution_backend: Optional[Dict[str, Any]] = None
 
 
 class ClusterStats(BaseModel):
@@ -227,8 +230,14 @@ def run_serial_baseline_with_progress(
     output_path: str,
     filter_chain: str,
     total_duration: float,
+    execution_backend: str,
     progress_callback=None,
 ) -> float:
+    encode_args = (
+        ["-c:v", "h264_nvenc", "-preset", "fast", "-cq", "23"]
+        if execution_backend == "cuda"
+        else ["-threads", "1", "-c:v", "libx264", "-preset", "ultrafast", "-crf", "23"]
+    )
     cmd = [
         "ffmpeg",
         "-y",
@@ -236,14 +245,7 @@ def run_serial_baseline_with_progress(
         input_path,
         "-vf",
         filter_chain,
-        "-threads",
-        "1",
-        "-c:v",
-        "libx264",
-        "-preset",
-        "ultrafast",
-        "-crf",
-        "23",
+        *encode_args,
         "-c:a",
         "copy",
         "-progress",
@@ -352,6 +354,10 @@ def run_render_task(
     _set_job_progress(job, "analyzing")
     job["serial_progress"] = 0
     job["parallel_progress"] = 0
+    requested_backend = job.get("requested_execution_backend") or "auto"
+    resolved_backend = resolve_execution_backend(requested_backend)
+    backend_info = execution_backend_info(requested_backend)
+    job["execution_backend"] = backend_info
 
     job_temp = ensure_dir(TEMP_BASE / job_id)
     output_path = OUTPUT_DIR / f"output_{job_id}.mp4"
@@ -411,6 +417,7 @@ def run_render_task(
                 output_path=str(serial_output_path),
                 filter_chain=filter_chain,
                 total_duration=metadata.duration,
+                execution_backend=resolved_backend,
                 progress_callback=lambda value: (
                     job.__setitem__("serial_progress", value),
                     job.__setitem__("progress", 30 + int(value * 0.15)),
@@ -421,7 +428,12 @@ def run_render_task(
             job["serial_actual_time"] = _format_seconds(serial_baseline_time)
             job["projected_serial_time"] = _format_seconds(serial_baseline_time)
         else:
-            serial_sample_time = benchmark_serial_sample(input_path, str(job_temp), filter_chain)
+            serial_sample_time = benchmark_serial_sample(
+                input_path,
+                str(job_temp),
+                filter_chain,
+                execution_backend=resolved_backend,
+            )
             benchmark_duration = min(2.0, metadata.duration)
             projected_serial_time = (metadata.duration / max(benchmark_duration, 1e-6)) * serial_sample_time
             job["projected_serial_time"] = _format_seconds(projected_serial_time)
@@ -502,6 +514,7 @@ def run_render_task(
             workers=workers,
             filter_chain=filter_chain,
             temp_dir=str(job_temp),
+            execution_backend=resolved_backend,
             progress_callback=progress_callback,
             phase_callback=phase_callback,
         )
@@ -568,6 +581,7 @@ def run_render_task(
             "input_file": input_path,
             "video_id": Path(input_path).stem,
             "metadata": asdict(metadata),
+            "execution_backend": backend_info,
             "feature_summary": job["feature_summary"],
             "partition_policy": partition_plan.policy,
             "worker_count": workers,
@@ -736,6 +750,8 @@ async def create_job(job_req: JobCreate, background_tasks: BackgroundTasks):
         "scheduler_chunk_multipliers": job_req.scheduler_chunk_multipliers or list(DEFAULT_CHUNK_MULTIPLIERS),
         "enable_encode_proxy": bool(job_req.enable_encode_proxy),
         "enable_vmaf": bool(job_req.enable_vmaf),
+        "requested_execution_backend": job_req.execution_backend or "auto",
+        "execution_backend": None,
         "planned_chunk_boundaries": None,
         "predicted_chunk_costs": None,
         "planning_rationale": None,

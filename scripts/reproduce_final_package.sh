@@ -14,6 +14,7 @@
 set -euo pipefail
 
 OUTPUT_DIR="${1:-experiments/paper_run_final}"
+EXECUTION_BACKEND="${DVE_EXECUTION_BACKEND:-auto}"
 SHORT_DIR="${OUTPUT_DIR}_short_tmp"
 MANIFEST="experiments/benchmark_suite/benchmark_manifest.json"
 COMMON_ARGS=(
@@ -27,6 +28,7 @@ COMMON_ARGS=(
 
 echo "=== Reproducing canonical final package ==="
 echo "Output: $OUTPUT_DIR"
+echo "Execution backend: $EXECUTION_BACKEND"
 echo ""
 
 # Stage 1: Main batch (4 clips, 3 workloads)
@@ -38,6 +40,7 @@ PYTHONPATH=src python3 -m experiment_runner \
   experiments/benchmark_suite/inputs/real_clipchamp_1080p_30s.mp4 \
   --output-dir "$OUTPUT_DIR" \
   --workloads light,medium,heavy \
+  --execution-backend "$EXECUTION_BACKEND" \
   "${COMMON_ARGS[@]}"
 
 # Stage 2: Short clip batch (3s, light only)
@@ -46,6 +49,7 @@ PYTHONPATH=src python3 -m experiment_runner \
   experiments/benchmark_suite/inputs/real_clipchamp_720p_3s.mp4 \
   --output-dir "$SHORT_DIR" \
   --workloads light \
+  --execution-backend "$EXECUTION_BACKEND" \
   "${COMMON_ARGS[@]}"
 
 # Stage 3: Merge
@@ -69,7 +73,8 @@ PYTHONPATH=src python3 -m calibration_analysis \
 PYTHONPATH=src python3 -m budget_analysis \
   "$OUTPUT_DIR/runs.csv" \
   --output-json "$OUTPUT_DIR/budget_analysis.json" \
-  --output-csv "$OUTPUT_DIR/budget_analysis.csv"
+  --output-csv "$OUTPUT_DIR/budget_analysis.csv" \
+  --execution-backend "$EXECUTION_BACKEND"
 
 PYTHONPATH=src python3 -m decision_cost_analysis \
   "$OUTPUT_DIR/runs.csv" \

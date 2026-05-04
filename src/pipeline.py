@@ -22,6 +22,8 @@ from ffmpeg_utils import (
     merge_chunks,
     process_chunk,
     run_serial_baseline,
+    execution_backend_info,
+    resolve_execution_backend,
 )
 from scheduler import search_best_configuration
 from video_types import ChunkResult, PartitionPlan, SelectionResult
@@ -36,6 +38,7 @@ def execute_partition_plan(
     workers: int,
     filter_chain: str,
     temp_dir: str,
+    execution_backend: str | None = None,
     progress_callback: ProgressCallback = None,
     phase_callback: Optional[Callable[[str], None]] = None,
 ) -> dict:
@@ -46,7 +49,8 @@ def execute_partition_plan(
         phase_callback("parallel")
     with ThreadPoolExecutor(max_workers=max(1, workers)) as executor:
         futures = {
-            executor.submit(process_chunk, chunk, filter_chain): chunk for chunk in partition_plan.chunks
+            executor.submit(process_chunk, chunk, filter_chain, execution_backend=execution_backend): chunk
+            for chunk in partition_plan.chunks
         }
         dispatch_time = time.perf_counter() - submit_start
         completed = 0
@@ -149,8 +153,11 @@ def run_processing_pipeline(
     reuse_serial_reference_on_fallback: bool = False,
     rate_profile: Optional[list[tuple[float, float]]] = None,
     max_workers: Optional[int] = None,
+    execution_backend: str | None = None,
 ) -> dict:
     """Run the research pipeline and emit a paper-oriented experiment record."""
+    resolved_backend = resolve_execution_backend(execution_backend)
+    backend_info = execution_backend_info(execution_backend)
     temp_root = Path(temp_dir) if temp_dir else Path(tempfile.mkdtemp(prefix="dve_run_"))
     ensure_dir(temp_root)
 
@@ -190,6 +197,7 @@ def run_processing_pipeline(
             duration=metadata.duration,
             sample_seconds=serial_sample_seconds,
             sample_fractions=[0.0, 0.25, 0.5, 0.75, 0.95],
+            execution_backend=resolved_backend,
         )
         serial_sampling_time = time.perf_counter() - serial_profile_start
         serial_sample_seconds = float(serial_profile["sample_seconds"])
@@ -211,6 +219,7 @@ def run_processing_pipeline(
             temp_dir=str(temp_root),
             filter_chain=filter_chain,
             sample_seconds=serial_sample_seconds,
+            execution_backend=resolved_backend,
         )
         serial_sample_times = [serial_sample_time]
         serial_sampling_time = serial_sample_time
@@ -293,6 +302,7 @@ def run_processing_pipeline(
             workers=selected_workers,
             filter_chain=filter_chain,
             temp_dir=str(temp_root),
+            execution_backend=resolved_backend,
             progress_callback=progress_callback,
         )
         processing_complete = time.perf_counter()
@@ -318,7 +328,12 @@ def run_processing_pipeline(
             compute_time = serial_reference_time
         if serial_baseline_time is None and enable_full_serial_baseline:
             serial_baseline_output = str(temp_root / "serial_baseline.mp4")
-            serial_baseline_time = run_serial_baseline(input_path, serial_baseline_output, filter_chain)
+            serial_baseline_time = run_serial_baseline(
+                input_path,
+                serial_baseline_output,
+                filter_chain,
+                execution_backend=resolved_backend,
+            )
             serial_baseline_source = "measured_full_serial"
         elif serial_baseline_time is None:
             serial_baseline_source = "projected_only"
@@ -378,6 +393,7 @@ def run_processing_pipeline(
         "video_id": Path(input_path).stem,
         "video_duration_seconds": round(metadata.duration, 6),
         "metadata": asdict(metadata),
+        "execution_backend": backend_info,
         "feature_summary": {
             "sample_fps": feature_result.sample_fps,
             "sample_width": feature_result.sample_width,
