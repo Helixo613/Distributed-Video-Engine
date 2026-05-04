@@ -45,6 +45,7 @@ export interface RenderingJob {
   predicted_chunk_costs?: number[] | null;
   actual_chunk_runtime?: Array<Record<string, unknown>> | null;
   overheads?: Record<string, number> | null;
+  decision_cost?: Record<string, number | null> | null;
   performance?: Record<string, number | null> | null;
   scheduler?: Record<string, unknown> | null;
   scheduler_enabled?: boolean;

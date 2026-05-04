@@ -90,12 +90,12 @@ export const storySteps: StoryStep[] = [
   {
     id: 'problem',
     eyebrow: 'Problem',
-    title: 'Fixed parallelism is not always optimal',
-    summary: 'Cloud AI pipelines often preprocess video with fixed worker counts.',
+    title: 'For short jobs, choosing can also be expensive',
+    summary: 'Media preprocessing decisions must include both execution overhead and decision overhead.',
     detail:
-      'Short or lightweight clips can spend more time on splitting, dispatching, startup, and merge overhead than on useful preprocessing work.',
+      'Short or lightweight clips can spend meaningful time on metadata probing, feature extraction, scheduling, splitting, dispatching, and merging.',
     contribution:
-      'The project frames execution-regime selection as the research problem, not just chunk scheduling.',
+      'The project frames decision-aware execution selection as the research problem, not just chunk scheduling.',
     icon: Film,
   },
   {
@@ -112,12 +112,12 @@ export const storySteps: StoryStep[] = [
   {
     id: 'selector',
     eyebrow: 'Novelty',
-    title: 'The scheduler decides whether parallelism is worth it',
-    summary: 'It predicts serial runtime, parallel makespan, dispatch cost, startup cost, and merge cost.',
+    title: 'The selector decides only when the decision is worth it',
+    summary: 'It measures rho: decision time divided by execution time.',
     detail:
-      'The selector searches bounded worker and chunk candidates, then chooses serial when overhead dominates or parallel when expected speedup clears the margin.',
+      'The selector searches bounded worker and chunk candidates, while the experiment record separates metadata, feature, scheduler, and execution time.',
     contribution:
-      'This is the central novelty: overhead-aware serial-versus-parallel regime selection before execution.',
+      'This is the central novelty: decision-aware serial-versus-parallel regime selection before execution.',
     icon: Brain,
   },
   {
@@ -400,13 +400,13 @@ export const architectureStages: ArchitectureStage[] = [
 
 export const contributionCards = [
   {
-    title: 'Execution-regime selection',
-    detail: 'Chooses serial or parallel before execution instead of assuming parallelism is always beneficial.',
+    title: 'Decision-cost modeling',
+    detail: 'Measures rho as the ratio between decision time and execution time for each run.',
     icon: Workflow,
   },
   {
-    title: 'Overhead-aware cost model',
-    detail: 'Models dispatch, worker startup, chunk makespan, and merge overhead in the selection decision.',
+    title: 'Execution-regime selection',
+    detail: 'Chooses serial or parallel before execution instead of assuming parallelism is always beneficial.',
     icon: Timer,
   },
   {

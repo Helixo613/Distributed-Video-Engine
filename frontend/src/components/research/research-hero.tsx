@@ -23,12 +23,12 @@ export function ResearchHero({ onNavigate, backendAvailable }: ResearchHeroProps
         </div>
 
         <h1 className="max-w-4xl text-4xl font-semibold tracking-normal text-white md:text-5xl">
-          Overhead-aware adaptive execution selection for cloud AI video preprocessing
+          Decision-aware execution selection for media preprocessing
         </h1>
 
         <p className="mt-5 max-w-3xl text-base leading-7 text-zinc-300">
-          This project does not merely parallelize video processing. It predicts whether parallelism is worth it,
-          then chooses serial execution or a worker/chunk plan using video features and an overhead-aware cost model.
+          This project does not merely parallelize video processing. It measures the cost of deciding, predicts whether
+          parallelism is worth it, then chooses serial execution or a worker/chunk plan.
         </p>
 
         <div className="mt-6 flex flex-wrap gap-3">

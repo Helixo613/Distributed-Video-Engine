@@ -53,6 +53,8 @@ def main() -> None:
         psnr = collect("quality.psnr")
         ssim = collect("quality.ssim")
         pred_err = collect("runtime.prediction_relative_error")
+        decision_time = collect("decision_cost.T_decide")
+        decision_rho = collect("decision_cost.rho")
         input_psnr = collect("quality.input_psnr")
         input_ssim = collect("quality.input_ssim")
         chosen_policies = sorted({row.get("partition_policy", "") for row in group if row.get("partition_policy")})
@@ -97,6 +99,8 @@ def main() -> None:
             "input_psnr_mean": round(_mean(input_psnr), 6) if input_psnr else None,
             "input_ssim_mean": round(_mean(input_ssim), 6) if input_ssim else None,
             "prediction_relative_error_mean": round(_mean(pred_err), 6) if pred_err else None,
+            "decision_time_mean": round(_mean(decision_time), 6) if decision_time else None,
+            "decision_rho_mean": round(_mean(decision_rho), 6) if decision_rho else None,
         }
         summary_rows.append(summary_row)
         baseline_lookup[(input_file, workload_class)][baseline] = summary_row
@@ -199,6 +203,8 @@ def main() -> None:
                 "selector_prediction_error_mean": (
                     adaptive_row.get("prediction_relative_error_mean") if adaptive_row else None
                 ),
+                "selector_decision_time_mean": adaptive_row.get("decision_time_mean") if adaptive_row else None,
+                "selector_decision_rho_mean": adaptive_row.get("decision_rho_mean") if adaptive_row else None,
                 "selector_vs_static_margin": selector_vs_static_margin,
                 "selector_vs_serial_speedup": selector_vs_serial_speedup,
                 "selector_good_decision": selector_good_decision,
@@ -257,6 +263,10 @@ def main() -> None:
                 "actual winner, OR when the selector and winner used the same "
                 "configuration (worker count, chunk count, policy) — indicating "
                 "the runtime gap is trial noise, not a decision error."
+            ),
+            "selector_decision_rho_mean": (
+                "Mean rho = T_decide / T_execute for adaptive-scheduled runs. "
+                "T_decide includes metadata probing, feature extraction, and scheduler search."
             ),
         },
         "baseline_summary": summary_rows,

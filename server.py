@@ -124,6 +124,7 @@ class JobStatus(BaseModel):
     predicted_chunk_costs: Optional[List[float]] = None
     actual_chunk_runtime: Optional[List[Dict[str, Any]]] = None
     overheads: Optional[Dict[str, float]] = None
+    decision_cost: Optional[Dict[str, Optional[float]]] = None
     performance: Optional[Dict[str, Any]] = None
     scheduler: Optional[Dict[str, Any]] = None
     scheduler_enabled: Optional[bool] = None
@@ -362,7 +363,9 @@ def run_render_task(
     serial_sample_time: Optional[float] = None
 
     try:
+        probe_start = time.perf_counter()
         metadata = analyze_video(input_path)
+        probe_time = time.perf_counter() - probe_start
         job["metadata"] = asdict(metadata)
 
         partition_policy = job.get("partition_policy") or "equal-duration"
@@ -426,7 +429,9 @@ def run_render_task(
 
         _set_job_progress(job, "planning")
         selection_result = None
+        scheduler_time = 0.0
         if scheduler_enabled:
+            scheduler_start = time.perf_counter()
             selection_result = search_best_configuration(
                 input_path=input_path,
                 metadata=metadata,
@@ -438,10 +443,11 @@ def run_render_task(
                 partition_policy=partition_policy,
                 serial_sample_time=serial_sample_time,
                 measured_overheads={
-                    "probe": 0.0,
+                    "probe": probe_time,
                     "feature": feature_result.extraction_time,
                 },
             )
+            scheduler_time = time.perf_counter() - scheduler_start
             workers = selection_result.selected.worker_count
             selected_chunk_count = selection_result.selected.chunk_count
             job["workers"] = workers
@@ -513,12 +519,21 @@ def run_render_task(
         throughput = (metadata.duration / total_runtime) if total_runtime > 0 else None
 
         overheads = {
-            "probe": 0.0,
+            "probe": probe_time,
             "feature": feature_result.extraction_time,
             "benchmark": serial_baseline_time or serial_sample_time or 0.0,
+            "scheduler": scheduler_time,
             "partition": partition_plan.planning_time,
             "dispatch": execution["dispatch_time"],
             "merge": execution["merge_time"],
+        }
+        decision_cost = {
+            "T_metadata": probe_time,
+            "T_features": feature_result.extraction_time,
+            "T_scheduler": scheduler_time,
+            "T_decide": probe_time + feature_result.extraction_time + scheduler_time,
+            "T_execute": total_runtime,
+            "rho": ((probe_time + feature_result.extraction_time + scheduler_time) / total_runtime) if total_runtime > 0 else None,
         }
         performance = {
             "throughput": throughput,
@@ -562,6 +577,7 @@ def run_render_task(
             "predicted_chunk_costs": job["predicted_chunk_costs"],
             "actual_chunk_runtime": actual_chunk_runtime,
             "overheads": overheads,
+            "decision_cost": decision_cost,
             "runtime": {
                 "serial_sample_time": serial_sample_time,
                 "projected_serial_time": projected_serial_time,
@@ -586,6 +602,7 @@ def run_render_task(
         job["quality_metrics"] = quality_metrics
         job["actual_chunk_runtime"] = actual_chunk_runtime
         job["overheads"] = overheads
+        job["decision_cost"] = decision_cost
         job["performance"] = performance
         job["experiment_record_path"] = _public_path(record_path)
 
@@ -724,6 +741,7 @@ async def create_job(job_req: JobCreate, background_tasks: BackgroundTasks):
         "planning_rationale": None,
         "actual_chunk_runtime": None,
         "overheads": None,
+        "decision_cost": None,
         "performance": None,
         "selection": None,
         "feature_summary": None,

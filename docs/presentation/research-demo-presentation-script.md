@@ -5,10 +5,10 @@
 - Today I am presenting **Distributed Video Engine**, a research prototype for adaptive video preprocessing.
 - The project is focused on cloud AI pipelines where video is preprocessed before downstream tasks like detection, analytics, or multimodal inference.
 - The core question is simple:
-  - **Should this video preprocessing job run serially or in parallel?**
-  - If parallel, **how many workers and chunks should we use?**
+  - **Is it worth spending time to choose an execution plan for this video?**
+  - If yes, **should it run serially or in parallel, and with how many workers and chunks?**
 - My main contribution is not just parallel video processing.
-- The novelty is **overhead-aware adaptive execution selection**.
+- The novelty is **decision-aware execution selection**.
 
 ## 2. Problem
 
@@ -21,10 +21,14 @@
   - merging output chunks
 - For short or lightweight clips, this overhead can dominate the actual useful work.
 - For longer or heavier clips, parallelism can give meaningful speedup.
+- The decision layer also has overhead:
+  - metadata probing
+  - feature extraction
+  - scheduler search
 - So the problem is:
   - fixed serial execution can be too slow
   - fixed parallel execution can waste resources
-  - the system needs to decide before execution which path makes sense
+  - adaptive selection can also be wrong if the decision cost is too high
 
 ## 3. Project Idea
 
@@ -39,6 +43,7 @@
 - Then it uses a cost model to estimate:
   - serial runtime
   - parallel runtime
+  - decision cost
   - dispatch overhead
   - merge overhead
   - worker startup cost
@@ -57,10 +62,10 @@
 - It explains the project in four steps:
   - Problem: fixed parallelism is not always optimal.
   - Characterization: cheap video features estimate cost before execution.
-  - Novelty: the scheduler decides whether parallelism is worth it.
+  - Novelty: the selector measures whether the decision is worth its own cost.
   - Evidence: results show speedup, prediction quality, and resource tradeoffs.
 - The key sentence to remember is:
-  - **This project does not merely parallelize video preprocessing; it decides whether parallelism is worth it.**
+  - **This project does not merely parallelize video preprocessing; it asks whether the decision itself is worth the cost.**
 
 ## 5. UI Walkthrough: Live Demo
 
@@ -78,6 +83,8 @@
     - current phase
     - progress
     - parallel runtime
+    - decision cost
+    - rho, which is decision time divided by execution time
     - serial runtime
     - actual speedup
     - PSNR
@@ -142,8 +149,9 @@
 
 - Traditional systems often assume parallel execution is beneficial.
 - This project asks a more careful question:
-  - **Is parallel execution worth its overhead for this specific video and workload?**
+  - **Is adaptive selection worth its decision cost for this specific video and workload?**
 - Novel contributions:
+  - decision-cost modeling with `rho = T_decide / T_execute`
   - execution-regime selection between serial and parallel
   - overhead-aware cost model
   - content-aware video characterization
@@ -163,9 +171,8 @@
 - To summarize:
   - video preprocessing is important in cloud AI pipelines
   - fixed parallelism can be inefficient
-  - this project predicts whether parallelism is worth it before execution
+  - this project measures decision cost instead of treating it as free
   - it chooses serial or adaptive parallel execution based on content features and overhead modeling
   - the UI demonstrates both the research idea and the working system
 - The final takeaway:
-  - **The contribution is adaptive execution selection, not just faster video processing.**
-
+  - **The contribution is decision-aware execution selection, not just faster video processing.**

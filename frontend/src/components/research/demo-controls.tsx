@@ -27,6 +27,11 @@ interface DemoControlsProps {
       throughput?: number | null;
       efficiency?: number | null;
     } | null;
+    decision_cost?: {
+      T_decide?: number | null;
+      T_execute?: number | null;
+      rho?: number | null;
+    } | null;
     error?: string | null;
   } | null;
   isUploading: boolean;
@@ -175,8 +180,16 @@ export function DemoControls({
             </div>
           </div>
 
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
             <LiveMetric label="Parallel time" value={liveJob.duration ?? 'pending'} />
+            <LiveMetric
+              label="Decision cost"
+              value={typeof liveJob.decision_cost?.T_decide === 'number' ? `${liveJob.decision_cost.T_decide.toFixed(3)}s` : 'pending'}
+            />
+            <LiveMetric
+              label="rho"
+              value={typeof liveJob.decision_cost?.rho === 'number' ? liveJob.decision_cost.rho.toFixed(3) : 'pending'}
+            />
             <LiveMetric label="Serial time" value={liveJob.serial_actual_time ?? 'pending'} />
             <LiveMetric
               label="Actual speedup"

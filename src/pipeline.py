@@ -357,6 +357,15 @@ def run_processing_pipeline(
     )
     speedup_e2e = (serial_e2e_ref / e2e_time) if serial_e2e_ref is not None and e2e_time > 0 else None
 
+    decision_cost = {
+        "T_metadata": probe_time,
+        "T_features": feature_result.extraction_time,
+        "T_scheduler": scheduler_time,
+        "T_decide": probe_time + feature_result.extraction_time + scheduler_time,
+        "T_execute": compute_time,
+        "rho": ((probe_time + feature_result.extraction_time + scheduler_time) / compute_time) if compute_time > 0 else None,
+    }
+
     predicted_total = selection_result.selected.predicted_e2e_time if selection_result else None
     prediction_signed_error = (predicted_total - compute_time) if predicted_total is not None else None
     prediction_error = abs(prediction_signed_error) if prediction_signed_error is not None else None
@@ -409,6 +418,7 @@ def run_processing_pipeline(
             "merge": execution["merge_time"],
             "quality_evaluation": quality_eval_time,
         },
+        "decision_cost": decision_cost,
         "runtime": {
             "serial_sample_time": serial_sample_time,
             "serial_sample_positions": serial_sample_positions,

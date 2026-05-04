@@ -28,6 +28,11 @@ interface LiveJob {
     throughput?: number | null;
     efficiency?: number | null;
   } | null;
+  decision_cost?: {
+    T_decide?: number | null;
+    T_execute?: number | null;
+    rho?: number | null;
+  } | null;
   error?: string | null;
 }
 
